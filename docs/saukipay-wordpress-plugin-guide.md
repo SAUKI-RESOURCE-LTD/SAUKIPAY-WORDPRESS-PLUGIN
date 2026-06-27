@@ -20,6 +20,18 @@ The plugin connects securely to the Sauki Pay API and redirects customers to Sau
 - Sauki Pay merchant public and secret keys.
 - WooCommerce, only if you want to accept payments from WooCommerce checkout.
 
+## Download The Plugin
+
+You can download the Sauki Pay WordPress plugin from the official GitHub release page:
+
+`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/tag/v1.0.0`
+
+Direct plugin ZIP download:
+
+`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.0.0/saukipay-wordpress-plugin.zip`
+
+Download the ZIP file before installing the plugin in WordPress.
+
 ## Install The Plugin
 
 1. Log in to your WordPress admin dashboard.

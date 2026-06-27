@@ -153,14 +153,15 @@ class SaukiPay_Settings {
 	public function sanitize( $input ) {
 		$input    = is_array( $input ) ? $input : array();
 		$defaults = self::defaults();
+		$current  = $this->all();
 
 		return array(
 			'enabled'         => empty( $input['enabled'] ) ? 'no' : 'yes',
 			'test_mode'       => empty( $input['test_mode'] ) ? 'no' : 'yes',
 			'test_public_key' => isset( $input['test_public_key'] ) ? sanitize_text_field( wp_unslash( $input['test_public_key'] ) ) : '',
-			'test_secret_key' => isset( $input['test_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['test_secret_key'] ) ) : '',
+			'test_secret_key' => ! empty( $input['test_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['test_secret_key'] ) ) : $current['test_secret_key'],
 			'live_public_key' => isset( $input['live_public_key'] ) ? sanitize_text_field( wp_unslash( $input['live_public_key'] ) ) : '',
-			'live_secret_key' => isset( $input['live_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['live_secret_key'] ) ) : '',
+			'live_secret_key' => ! empty( $input['live_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['live_secret_key'] ) ) : $current['live_secret_key'],
 			'api_base_url'    => ! empty( $input['api_base_url'] ) ? esc_url_raw( wp_unslash( $input['api_base_url'] ) ) : $defaults['api_base_url'],
 			'button_text'     => ! empty( $input['button_text'] ) ? sanitize_text_field( wp_unslash( $input['button_text'] ) ) : $defaults['button_text'],
 		);
@@ -280,7 +281,10 @@ class SaukiPay_Settings {
 		?>
 		<tr>
 			<th scope="row"><label for="saukipay_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
-			<td><input type="password" autocomplete="new-password" class="regular-text" id="saukipay_<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $value ); ?>"></td>
+			<td>
+				<input type="password" autocomplete="new-password" class="regular-text" id="saukipay_<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]" value="" placeholder="<?php echo esc_attr( '' !== $value ? __( 'Configured', 'saukipay' ) : '' ); ?>">
+				<p class="description"><?php esc_html_e( 'Leave blank to keep the existing secret key.', 'saukipay' ); ?></p>
+			</td>
 		</tr>
 		<?php
 	}
