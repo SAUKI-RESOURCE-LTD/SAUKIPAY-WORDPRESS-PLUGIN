@@ -1,0 +1,207 @@
+%PDF-1.4
+1 0 obj
+<< /Length 605 >>
+stream
+0.063 0.184 0.227 rg 0 0 612 792 re f
+0.955 0.980 0.984 rg 0 0 612 190 re f
+BT 1 1 1 rg /F2 36 Tf 72 650 Td (Sauki) Tj ET
+BT 0.965 0.659 0.102 rg /F2 36 Tf 178 650 Td (PAY) Tj ET
+BT 0.965 0.659 0.102 rg /F2 15 Tf 72 590 Td (WordPress Plugin Guide) Tj ET
+BT 1 1 1 rg /F2 28 Tf 72 535 Td (Accept Sauki Pay) Tj ET
+BT 1 1 1 rg /F2 28 Tf 72 503 Td (payments on your) Tj ET
+BT 1 1 1 rg /F2 28 Tf 72 471 Td (WordPress website.) Tj ET
+BT 0.820 0.900 0.920 rg /F1 13 Tf 72 445 Td (Use WooCommerce checkout or a modern standalone payment form.) Tj ET
+BT 0.380 0.455 0.490 rg /F1 11 Tf 72 86 Td (Version 1.0.0) Tj ET
+endstream
+endobj
+2 0 obj
+<< /Length 2782 >>
+stream
+0.063 0.184 0.227 rg 0 748 612 44 re f
+BT 1 1 1 rg /F2 14 Tf 42 764 Td (Sauki) Tj ET
+BT 0.965 0.659 0.102 rg /F2 14 Tf 82 764 Td (PAY) Tj ET
+BT 0.820 0.900 0.920 rg /F1 9 Tf 430 764 Td (WordPress Plugin Guide) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 696.0 Td (Version: 1.0.0) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 664 Td (What This Plugin Does) Tj ET
+0.965 0.659 0.102 rg 54 656 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 626.0 Td (Sauki Pay helps you accept payments on your WordPress website.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 600.0 Td (You can use it in two ways:) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 574.0 Td (? Add Sauki Pay to WooCommerce checkout.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 556.0 Td (? Add a standalone Sauki Pay payment form to any page with a shortcode.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 530.0 Td (The plugin connects securely to the Sauki Pay API and redirects customers to) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 514.0 Td (  Sauki Pay checkout to complete payment.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 482 Td (Requirements) Tj ET
+0.965 0.659 0.102 rg 54 474 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 444.0 Td (- WordPress 5.8 or newer.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 426.0 Td (- PHP 7.4 or newer.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 408.0 Td (- Sauki Pay merchant public and secret keys.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 390.0 Td (- WooCommerce, only if you want to accept payments from WooCommerce checkout.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 358 Td (Install The Plugin) Tj ET
+0.965 0.659 0.102 rg 54 350 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 320.0 Td (? Log in to your WordPress admin dashboard.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 302.0 Td (? Go to Plugins > Add New > Upload Plugin.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 284.0 Td (? Upload the Sauki Pay plugin ZIP file.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 266.0 Td (? Click Install Now.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 248.0 Td (? Click Activate Plugin.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 222.0 Td (After activation, a Sauki Pay menu appears in your WordPress admin sidebar.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 190 Td (Configure Sauki Pay) Tj ET
+0.965 0.659 0.102 rg 54 182 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 152.0 Td (? Open Sauki Pay from the WordPress admin menu.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 134.0 Td (? Enable the plugin.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 116.0 Td (? Choose test mode or live mode.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 98.0 Td (? Enter your Sauki Pay public and secret keys.) Tj ET
+BT 0.380 0.455 0.490 rg /F1 9 Tf 548 34 Td (2) Tj ET
+endstream
+endobj
+3 0 obj
+<< /Length 3060 >>
+stream
+0.063 0.184 0.227 rg 0 748 612 44 re f
+BT 1 1 1 rg /F2 14 Tf 42 764 Td (Sauki) Tj ET
+BT 0.965 0.659 0.102 rg /F2 14 Tf 82 764 Td (PAY) Tj ET
+BT 0.820 0.900 0.920 rg /F1 9 Tf 430 764 Td (WordPress Plugin Guide) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 704.0 Td (? Confirm the API base URL.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 686.0 Td (? Save your settings.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 660.0 Td (The default API base URL is:) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 634.0 Td (https://www.server.saukipay.net/api/v1) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 608.0 Td (Use test mode while setting up and switch to live mode only when you are) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 592.0 Td (  ready to accept real payments.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 560 Td (Callback And Webhook URLs) Tj ET
+0.965 0.659 0.102 rg 54 552 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 522.0 Td (The settings page displays the URLs your website uses for payment) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 506.0 Td (  confirmation.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 480.0 Td (Copy the webhook URL from the settings page and add it to your Sauki Pay) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 464.0 Td (  dashboard.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 438.0 Td (If you are testing locally, your WordPress site must be reachable from the) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 422.0 Td (  internet. A public staging website is recommended.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 390 Td (WooCommerce Payments) Tj ET
+0.965 0.659 0.102 rg 54 382 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 352.0 Td (To use Sauki Pay at WooCommerce checkout:) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 326.0 Td (? Install and activate WooCommerce.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 308.0 Td (? Open WooCommerce > Settings > Payments.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 290.0 Td (? Enable Sauki Pay.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 272.0 Td (? Set the checkout title and description.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 254.0 Td (? Save changes.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 228.0 Td (When a customer pays through WooCommerce, the plugin creates a payment) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 212.0 Td (  reference, sends the order details to Sauki Pay, redirects the customer to) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 196.0 Td (  Sauki Pay checkout, verifies the payment after checkout, and updates the) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 180.0 Td (  WooCommerce order.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 154.0 Td (If the verified payment status is success, the order is marked as paid.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 122 Td (Payment Form Shortcode) Tj ET
+0.965 0.659 0.102 rg 54 114 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 84.0 Td (The plugin includes a payment form that can be placed on any page or post.) Tj ET
+BT 0.380 0.455 0.490 rg /F1 9 Tf 548 34 Td (3) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Length 3119 >>
+stream
+0.063 0.184 0.227 rg 0 748 612 44 re f
+BT 1 1 1 rg /F2 14 Tf 42 764 Td (Sauki) Tj ET
+BT 0.965 0.659 0.102 rg /F2 14 Tf 82 764 Td (PAY) Tj ET
+BT 0.820 0.900 0.920 rg /F1 9 Tf 430 764 Td (WordPress Plugin Guide) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 704.0 Td (Open Sauki Pay > Payment Form in WordPress admin to create or edit the form.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 688.0 Td (  The page generates a shortcode for you.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 662.0 Td (Basic shortcode:) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 636.0 Td ([saukipay_payment_form]) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 610.0 Td (Fixed amount example:) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 584.0 Td ([saukipay_payment_form amount="5000" currency="NGN" title="Pay Registration) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 568.0 Td (  Fee" fixed_amount="yes"]) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 536 Td (Payment Form Options) Tj ET
+0.965 0.659 0.102 rg 54 528 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 498.0 Td (Option: Option - Description) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 480.0 Td (Form title - The heading shown above the form fields.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 462.0 Td (Amount - The amount customers should pay.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 444.0 Td (Currency - The payment currency, for example NGN.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 426.0 Td (Button text - The text shown on the payment button.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 408.0 Td (Fixed amount - Prevents customers from changing the amount.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 382.0 Td (If fixed amount is disabled, customers can enter the amount themselves.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 350 Td (Customer Payment Flow) Tj ET
+0.965 0.659 0.102 rg 54 342 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 312.0 Td (? Customer enters their name, email, phone number, and amount.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 294.0 Td (? Customer clicks the Sauki Pay button.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 276.0 Td (? The customer is redirected to Sauki Pay checkout.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 258.0 Td (? After payment, Sauki Pay redirects the customer back to your website.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 240.0 Td (? The plugin verifies the payment with Sauki Pay.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 222.0 Td (? The customer sees a success or failure message.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 190 Td (Webhook Confirmation) Tj ET
+0.965 0.659 0.102 rg 54 182 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 152.0 Td (Sauki Pay can send webhook events to your website after payment.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 126.0 Td (The plugin verifies webhook requests before processing them. When a webhook) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 110.0 Td (  is valid and handled successfully, your website returns:) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 84.0 Td (ok) Tj ET
+BT 0.380 0.455 0.490 rg /F1 9 Tf 548 34 Td (4) Tj ET
+endstream
+endobj
+5 0 obj
+<< /Length 1421 >>
+stream
+0.063 0.184 0.227 rg 0 748 612 44 re f
+BT 1 1 1 rg /F2 14 Tf 42 764 Td (Sauki) Tj ET
+BT 0.965 0.659 0.102 rg /F2 14 Tf 82 764 Td (PAY) Tj ET
+BT 0.820 0.900 0.920 rg /F1 9 Tf 430 764 Td (WordPress Plugin Guide) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 704.0 Td (Webhooks help keep order and payment status updated even if a customer) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 688.0 Td (  closes the browser before returning to your website.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 656 Td (Going Live) Tj ET
+0.965 0.659 0.102 rg 54 648 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 618.0 Td (Before accepting real payments:) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 592.0 Td (? Confirm your live public key and live secret key are saved.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 574.0 Td (? Turn off test mode.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 556.0 Td (? Confirm your webhook URL is saved in your Sauki Pay dashboard.) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 538.0 Td (? Run a small live payment to confirm everything works.) Tj ET
+BT 0.063 0.184 0.227 rg /F2 17 Tf 54 506 Td (Support) Tj ET
+0.965 0.659 0.102 rg 54 498 44 3 re f
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 468.0 Td (If you need help with your Sauki Pay account or API keys, contact Sauki Pay) Tj ET
+BT 0.078 0.141 0.169 rg /F1 10.5 Tf 72 452.0 Td (  support.) Tj ET
+BT 0.380 0.455 0.490 rg /F1 9 Tf 548 34 Td (5) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Catalog /Pages 7 0 R >>
+endobj
+7 0 obj
+<< /Type /Pages /Kids [10 0 R 11 0 R 12 0 R 13 0 R 14 0 R] /Count 5 >>
+endobj
+8 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 8 0 R /F2 9 0 R >> >> /Contents 1 0 R >>
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 8 0 R /F2 9 0 R >> >> /Contents 2 0 R >>
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 8 0 R /F2 9 0 R >> >> /Contents 3 0 R >>
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 8 0 R /F2 9 0 R >> >> /Contents 4 0 R >>
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 8 0 R /F2 9 0 R >> >> /Contents 5 0 R >>
+endobj
+xref
+0 15
+0000000000 65535 f 
+0000000009 00000 n 
+0000000665 00000 n 
+0000003499 00000 n 
+0000006611 00000 n 
+0000009782 00000 n 
+0000011255 00000 n 
+0000011304 00000 n 
+0000011390 00000 n 
+0000011460 00000 n 
+0000011535 00000 n 
+0000011672 00000 n 
+0000011809 00000 n 
+0000011946 00000 n 
+0000012083 00000 n 
+trailer
+<< /Size 15 /Root 6 0 R >>
+startxref
+12220
+%%EOF

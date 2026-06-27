@@ -1,0 +1,232 @@
+.saukipay-form-shell {
+	width: 100%;
+	max-width: 480px;
+	box-sizing: border-box;
+	border: 1px solid rgba(20, 68, 78, 0.12);
+	border-radius: 18px;
+	background: #ffffff;
+	box-shadow: 0 22px 60px rgba(16, 47, 58, 0.14);
+	overflow: hidden;
+}
+
+.saukipay-form-brand {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 18px 20px;
+	background: #102f3a;
+	color: #ffffff;
+}
+
+.saukipay-form-brand-main {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	min-width: 0;
+}
+
+.saukipay-form-icon {
+	display: inline-grid;
+	place-items: center;
+	flex: 0 0 auto;
+	width: 42px;
+	height: 42px;
+	border-radius: 14px;
+	background: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(16, 47, 58, 0.08), 0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+.saukipay-form-icon img {
+	display: block;
+	width: 30px;
+	height: auto;
+	object-fit: contain;
+}
+
+.saukipay-form-wordmark {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 3px;
+	color: #ffffff;
+	font-size: 1.12rem;
+	font-weight: 900;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.saukipay-form-wordmark strong {
+	color: #f6a81a;
+	font: inherit;
+}
+
+.saukipay-form-secure {
+	font-size: 0.8rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: #f6a81a;
+	white-space: nowrap;
+}
+
+.saukipay-form {
+	display: grid;
+	gap: 16px;
+	padding: 22px;
+	background: #ffffff;
+}
+
+.saukipay-form-heading {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+	padding-bottom: 6px;
+}
+
+.saukipay-form h3 {
+	margin: 0;
+	color: #102f3a;
+	font-size: 1.35rem;
+	line-height: 1.25;
+	font-weight: 800;
+}
+
+.saukipay-form-heading strong {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	min-height: 32px;
+	padding: 5px 10px;
+	border-radius: 999px;
+	background: rgba(246, 168, 26, 0.14);
+	color: #8a5700;
+	font-size: 0.9rem;
+	font-weight: 800;
+}
+
+.saukipay-form label {
+	display: grid;
+	gap: 7px;
+	color: #102f3a;
+	font-size: 0.92rem;
+	font-weight: 700;
+}
+
+.saukipay-form input {
+	width: 100%;
+	box-sizing: border-box;
+	min-height: 48px;
+	padding: 11px 13px;
+	border: 1px solid rgba(20, 68, 78, 0.2);
+	border-radius: 10px;
+	background: #f8fbfc;
+	color: #102f3a;
+	font: inherit;
+	transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.saukipay-form input::placeholder {
+	color: rgba(16, 47, 58, 0.45);
+}
+
+.saukipay-form input:focus {
+	outline: 0;
+	border-color: #f6a81a;
+	background: #ffffff;
+	box-shadow: 0 0 0 4px rgba(246, 168, 26, 0.18);
+}
+
+.saukipay-form input:disabled {
+	color: rgba(16, 47, 58, 0.72);
+	background: #edf3f5;
+}
+
+.saukipay-form button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	width: 100%;
+	min-height: 50px;
+	margin-top: 2px;
+	border: 0;
+	border-radius: 12px;
+	padding: 12px 18px;
+	background: #f6a81a;
+	color: #102f3a;
+	font: inherit;
+	font-weight: 900;
+	cursor: pointer;
+	box-shadow: 0 12px 24px rgba(246, 168, 26, 0.3);
+	transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+
+.saukipay-form button:hover,
+.saukipay-form button:focus {
+	background: #ffb52d;
+	box-shadow: 0 14px 30px rgba(246, 168, 26, 0.38);
+	transform: translateY(-1px);
+}
+
+.saukipay-form button[disabled] {
+	cursor: wait;
+	opacity: 0.72;
+	transform: none;
+}
+
+.saukipay-result {
+	max-width: 480px;
+	box-sizing: border-box;
+	margin: 0 0 16px;
+	padding: 13px 15px;
+	border-radius: 12px;
+	font-weight: 700;
+}
+
+.saukipay-result-success {
+	border: 1px solid #79c58b;
+	background: #eefaf0;
+	color: #155724;
+}
+
+.saukipay-result-failed {
+	border: 1px solid #e0a1a1;
+	background: #fff1f1;
+	color: #842029;
+}
+
+.saukipay-form-preview {
+	max-width: 100%;
+	box-shadow: 0 18px 44px rgba(16, 47, 58, 0.12);
+}
+
+.saukipay-form-preview .saukipay-form {
+	gap: 12px;
+	padding: 18px;
+}
+
+.saukipay-form-preview .saukipay-form input {
+	min-height: 42px;
+}
+
+.saukipay-form-preview .saukipay-form button {
+	min-height: 44px;
+	box-shadow: none;
+}
+
+@media (max-width: 520px) {
+	.saukipay-form-brand,
+	.saukipay-form-heading {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.saukipay-form-secure {
+		white-space: normal;
+	}
+
+	.saukipay-form {
+		padding: 18px;
+	}
+}

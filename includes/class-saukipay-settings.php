@@ -1,0 +1,287 @@
+<?php
+/**
+ * Admin settings.
+ *
+ * @package SaukiPay
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Handles global Sauki Pay settings.
+ */
+class SaukiPay_Settings {
+	const OPTION_NAME = 'saukipay_settings';
+
+	/**
+	 * Register hooks.
+	 *
+	 * @return void
+	 */
+	public function init() {
+		add_action( 'admin_menu', array( $this, 'add_menu' ) );
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+	}
+
+	/**
+	 * Default settings.
+	 *
+	 * @return array
+	 */
+	public static function defaults() {
+		return array(
+			'enabled'         => 'yes',
+			'test_mode'       => 'yes',
+			'test_public_key' => '',
+			'test_secret_key' => '',
+			'live_public_key' => '',
+			'live_secret_key' => '',
+			'api_base_url'    => 'https://www.server.saukipay.net/api/v1',
+			'button_text'     => 'Pay with Sauki Pay',
+		);
+	}
+
+	/**
+	 * Get all settings.
+	 *
+	 * @return array
+	 */
+	public function all() {
+		$saved = get_option( self::OPTION_NAME, array() );
+		return wp_parse_args( is_array( $saved ) ? $saved : array(), self::defaults() );
+	}
+
+	/**
+	 * Get one setting.
+	 *
+	 * @param string $key Setting key.
+	 * @param mixed  $default Default value.
+	 * @return mixed
+	 */
+	public function get( $key, $default = '' ) {
+		$settings = $this->all();
+		return isset( $settings[ $key ] ) ? $settings[ $key ] : $default;
+	}
+
+	/**
+	 * Whether global plugin processing is enabled.
+	 *
+	 * @return bool
+	 */
+	public function is_enabled() {
+		return 'yes' === $this->get( 'enabled', 'yes' );
+	}
+
+	/**
+	 * Whether test mode is active.
+	 *
+	 * @return bool
+	 */
+	public function is_test_mode() {
+		return 'yes' === $this->get( 'test_mode', 'yes' );
+	}
+
+	/**
+	 * Current public key.
+	 *
+	 * @return string
+	 */
+	public function public_key() {
+		return $this->is_test_mode() ? trim( (string) $this->get( 'test_public_key' ) ) : trim( (string) $this->get( 'live_public_key' ) );
+	}
+
+	/**
+	 * Current secret key.
+	 *
+	 * @return string
+	 */
+	public function secret_key() {
+		return $this->is_test_mode() ? trim( (string) $this->get( 'test_secret_key' ) ) : trim( (string) $this->get( 'live_secret_key' ) );
+	}
+
+	/**
+	 * Base API URL.
+	 *
+	 * @return string
+	 */
+	public function api_base_url() {
+		return untrailingslashit( esc_url_raw( $this->get( 'api_base_url', 'https://www.server.saukipay.net/api/v1' ) ) );
+	}
+
+	/**
+	 * Add admin menu item.
+	 *
+	 * @return void
+	 */
+	public function add_menu() {
+		add_menu_page(
+			__( 'Sauki Pay', 'saukipay' ),
+			__( 'Sauki Pay', 'saukipay' ),
+			'manage_options',
+			'saukipay-settings',
+			array( $this, 'render_page' ),
+			'dashicons-money-alt',
+			56
+		);
+	}
+
+	/**
+	 * Register option and fields.
+	 *
+	 * @return void
+	 */
+	public function register_settings() {
+		register_setting(
+			'saukipay_settings_group',
+			self::OPTION_NAME,
+			array(
+				'type'              => 'array',
+				'sanitize_callback' => array( $this, 'sanitize' ),
+				'default'           => self::defaults(),
+			)
+		);
+	}
+
+	/**
+	 * Sanitize settings.
+	 *
+	 * @param array $input Raw input.
+	 * @return array
+	 */
+	public function sanitize( $input ) {
+		$input    = is_array( $input ) ? $input : array();
+		$defaults = self::defaults();
+
+		return array(
+			'enabled'         => empty( $input['enabled'] ) ? 'no' : 'yes',
+			'test_mode'       => empty( $input['test_mode'] ) ? 'no' : 'yes',
+			'test_public_key' => isset( $input['test_public_key'] ) ? sanitize_text_field( wp_unslash( $input['test_public_key'] ) ) : '',
+			'test_secret_key' => isset( $input['test_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['test_secret_key'] ) ) : '',
+			'live_public_key' => isset( $input['live_public_key'] ) ? sanitize_text_field( wp_unslash( $input['live_public_key'] ) ) : '',
+			'live_secret_key' => isset( $input['live_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['live_secret_key'] ) ) : '',
+			'api_base_url'    => ! empty( $input['api_base_url'] ) ? esc_url_raw( wp_unslash( $input['api_base_url'] ) ) : $defaults['api_base_url'],
+			'button_text'     => ! empty( $input['button_text'] ) ? sanitize_text_field( wp_unslash( $input['button_text'] ) ) : $defaults['button_text'],
+		);
+	}
+
+	/**
+	 * Callback URL.
+	 *
+	 * @return string
+	 */
+	public static function callback_url() {
+		return add_query_arg( 'saukipay-listener', 'callback', home_url( '/' ) );
+	}
+
+	/**
+	 * WooCommerce callback URL.
+	 *
+	 * @return string
+	 */
+	public static function woocommerce_callback_url() {
+		if ( function_exists( 'WC' ) && WC() ) {
+			return WC()->api_request_url( 'saukipay_callback' );
+		}
+
+		return home_url( '/wc-api/saukipay_callback/' );
+	}
+
+	/**
+	 * Webhook URL.
+	 *
+	 * @return string
+	 */
+	public static function webhook_url() {
+		return add_query_arg( 'saukipay-listener', 'webhook', home_url( '/' ) );
+	}
+
+	/**
+	 * Render settings page.
+	 *
+	 * @return void
+	 */
+	public function render_page() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		$settings = $this->all();
+		?>
+		<div class="wrap">
+			<h1><?php esc_html_e( 'Sauki Pay Settings', 'saukipay' ); ?></h1>
+			<form method="post" action="options.php">
+				<?php settings_fields( 'saukipay_settings_group' ); ?>
+				<table class="form-table" role="presentation">
+					<tbody>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Enable plugin', 'saukipay' ); ?></th>
+							<td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[enabled]" value="yes" <?php checked( $settings['enabled'], 'yes' ); ?>> <?php esc_html_e( 'Enable Sauki Pay payments', 'saukipay' ); ?></label></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Test mode', 'saukipay' ); ?></th>
+							<td><label><input type="checkbox" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[test_mode]" value="yes" <?php checked( $settings['test_mode'], 'yes' ); ?>> <?php esc_html_e( 'Use test keys', 'saukipay' ); ?></label></td>
+						</tr>
+						<?php
+						$this->render_text_field( 'test_public_key', __( 'Test public key', 'saukipay' ), $settings['test_public_key'] );
+						$this->render_password_field( 'test_secret_key', __( 'Test secret key', 'saukipay' ), $settings['test_secret_key'] );
+						$this->render_text_field( 'live_public_key', __( 'Live public key', 'saukipay' ), $settings['live_public_key'] );
+						$this->render_password_field( 'live_secret_key', __( 'Live secret key', 'saukipay' ), $settings['live_secret_key'] );
+						$this->render_text_field( 'api_base_url', __( 'API base URL', 'saukipay' ), $settings['api_base_url'] );
+						$this->render_text_field( 'button_text', __( 'Button text', 'saukipay' ), $settings['button_text'] );
+						?>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Shortcode callback URL', 'saukipay' ); ?></th>
+							<td><code><?php echo esc_html( self::callback_url() ); ?></code></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'WooCommerce callback URL', 'saukipay' ); ?></th>
+							<td><code><?php echo esc_html( self::woocommerce_callback_url() ); ?></code></td>
+						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'Webhook URL', 'saukipay' ); ?></th>
+							<td><code><?php echo esc_html( self::webhook_url() ); ?></code></td>
+						</tr>
+					</tbody>
+				</table>
+				<?php submit_button(); ?>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render a text input row.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Field label.
+	 * @param string $value Field value.
+	 * @return void
+	 */
+	private function render_text_field( $key, $label, $value ) {
+		?>
+		<tr>
+			<th scope="row"><label for="saukipay_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
+			<td><input type="text" class="regular-text" id="saukipay_<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $value ); ?>"></td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Render a password input row.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Field label.
+	 * @param string $value Field value.
+	 * @return void
+	 */
+	private function render_password_field( $key, $label, $value ) {
+		?>
+		<tr>
+			<th scope="row"><label for="saukipay_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
+			<td><input type="password" autocomplete="new-password" class="regular-text" id="saukipay_<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $value ); ?>"></td>
+		</tr>
+		<?php
+	}
+}
