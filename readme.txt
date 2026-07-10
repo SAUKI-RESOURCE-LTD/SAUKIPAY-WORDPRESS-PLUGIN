@@ -54,6 +54,30 @@ Set the webhook URL shown on the Sauki Pay settings page. Successful webhook han
 
 `ok`
 
+== External services ==
+
+This plugin connects to the Sauki Pay payment service to initialize and verify payments.
+
+When a customer pays with Sauki Pay, the plugin sends payment details to the Sauki Pay API, including the payment reference, amount, currency, callback URL, customer name, customer email address, customer phone number, order metadata, and site URL.
+
+The default Sauki Pay API endpoint is:
+
+`https://www.server.saukipay.net/api/v1`
+
+This service is required for the payment features to work. Merchants must have a Sauki Pay account and configure their Sauki Pay public and secret keys in the plugin settings.
+
+Sauki Pay website:
+
+`https://saukipay.net`
+
+== Privacy ==
+
+This plugin does not collect payment data for advertising or tracking. Customer payment details are sent to Sauki Pay only for payment processing, payment verification, and webhook confirmation.
+
+== Assets and licensing ==
+
+The plugin code is licensed under GPLv2 or later. Included Sauki Pay brand assets are distributed with this plugin under GPLv2 or later, subject to Sauki Pay trademark rights.
+
 == Changelog ==
 
 = 1.0.0 =
