@@ -132,25 +132,29 @@ class SaukiPay_WooCommerce_Gateway extends WC_Payment_Gateway {
 		$response = $this->api->initialize_payment( $payload );
 
 		if ( is_wp_error( $response ) ) {
+			$this->api->log_debug( 'WooCommerce payment initialization failed.', array( 'order_id' => $order->get_id(), 'error' => $response->get_error_message() ) );
 			$order->add_order_note( 'Sauki Pay initialization failed: ' . $response->get_error_message() );
 			wc_add_notice( __( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
 
-		if ( empty( $response['data']['checkout'] ) ) {
+		$checkout_url = $this->api->get_checkout_url( $response );
+
+		if ( '' === $checkout_url ) {
+			$this->api->log_debug( 'WooCommerce payment initialization response missing checkout URL.', array( 'order_id' => $order->get_id(), 'response' => $response ) );
 			$order->add_order_note( 'Sauki Pay initialization failed: checkout URL missing in API response.' );
 			wc_add_notice( __( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
 
-		$order->update_meta_data( '_saukipay_access_code', isset( $response['data']['accessCode'] ) ? sanitize_text_field( $response['data']['accessCode'] ) : '' );
-		$order->update_meta_data( '_saukipay_checkout_url', esc_url_raw( $response['data']['checkout'] ) );
+		$order->update_meta_data( '_saukipay_access_code', $this->api->get_access_code( $response ) );
+		$order->update_meta_data( '_saukipay_checkout_url', esc_url_raw( $checkout_url ) );
 		$order->save();
 		$order->add_order_note( sprintf( 'Sauki Pay initialized successfully. Reference: %s', $reference ) );
 
 		return array(
 			'result'   => 'success',
-			'redirect' => esc_url_raw( $response['data']['checkout'] ),
+			'redirect' => esc_url_raw( $checkout_url ),
 		);
 	}
 

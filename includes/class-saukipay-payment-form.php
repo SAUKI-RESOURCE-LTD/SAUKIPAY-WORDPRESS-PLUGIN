@@ -405,7 +405,15 @@ class SaukiPay_Payment_Form {
 
 		$response = $this->api->initialize_payment( $payload );
 
-		if ( is_wp_error( $response ) || empty( $response['data']['checkout'] ) ) {
+		if ( is_wp_error( $response ) ) {
+			$this->api->log_debug( 'Shortcode payment initialization failed.', array( 'error' => $response->get_error_message() ) );
+			wp_die( esc_html__( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), 500 );
+		}
+
+		$checkout_url = $this->api->get_checkout_url( $response );
+
+		if ( '' === $checkout_url ) {
+			$this->api->log_debug( 'Shortcode payment initialization response missing checkout URL.', $response );
 			wp_die( esc_html__( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), 500 );
 		}
 
@@ -421,14 +429,14 @@ class SaukiPay_Payment_Form {
 					'phone' => $phone,
 				),
 				'status'      => 'initialized',
-				'checkout'    => esc_url_raw( $response['data']['checkout'] ),
+				'checkout'    => esc_url_raw( $checkout_url ),
 				'created_at'  => time(),
-				'access_code' => isset( $response['data']['accessCode'] ) ? sanitize_text_field( $response['data']['accessCode'] ) : '',
+				'access_code' => $this->api->get_access_code( $response ),
 			),
 			false
 		);
 
-		wp_safe_redirect( esc_url_raw( $response['data']['checkout'] ) );
+		wp_redirect( esc_url_raw( $checkout_url ) ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit;
 	}
 

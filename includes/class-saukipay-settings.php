@@ -244,6 +244,28 @@ class SaukiPay_Settings {
 							<th scope="row"><?php esc_html_e( 'Webhook URL', 'saukipay' ); ?></th>
 							<td><code><?php echo esc_html( self::webhook_url() ); ?></code></td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'WooCommerce gateway', 'saukipay' ); ?></th>
+							<td>
+								<?php if ( class_exists( 'WooCommerce' ) ) : ?>
+									<p>
+										<strong><?php esc_html_e( 'Available', 'saukipay' ); ?></strong>
+										<?php esc_html_e( 'Sauki Pay can be enabled from WooCommerce payment settings.', 'saukipay' ); ?>
+									</p>
+									<p>
+										<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ); ?>">
+											<?php esc_html_e( 'Open WooCommerce Payments', 'saukipay' ); ?>
+										</a>
+									</p>
+								<?php else : ?>
+									<p>
+										<strong><?php esc_html_e( 'Not active', 'saukipay' ); ?></strong>
+										<?php esc_html_e( 'Install and activate WooCommerce to use Sauki Pay at WooCommerce checkout.', 'saukipay' ); ?>
+									</p>
+									<p class="description"><?php esc_html_e( 'The shortcode payment form works without WooCommerce.', 'saukipay' ); ?></p>
+								<?php endif; ?>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 				<?php submit_button(); ?>

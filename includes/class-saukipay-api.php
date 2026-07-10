@@ -40,6 +40,77 @@ class SaukiPay_API {
 	}
 
 	/**
+	 * Extract checkout URL from an initialize response.
+	 *
+	 * @param array $response Initialize response.
+	 * @return string
+	 */
+	public function get_checkout_url( array $response ) {
+		$candidates = array(
+			isset( $response['data']['checkout'] ) ? $response['data']['checkout'] : '',
+			isset( $response['data']['checkout_url'] ) ? $response['data']['checkout_url'] : '',
+			isset( $response['data']['checkoutUrl'] ) ? $response['data']['checkoutUrl'] : '',
+			isset( $response['data']['payment_url'] ) ? $response['data']['payment_url'] : '',
+			isset( $response['data']['paymentUrl'] ) ? $response['data']['paymentUrl'] : '',
+			isset( $response['checkout'] ) ? $response['checkout'] : '',
+			isset( $response['checkout_url'] ) ? $response['checkout_url'] : '',
+			isset( $response['checkoutUrl'] ) ? $response['checkoutUrl'] : '',
+			isset( $response['payment_url'] ) ? $response['payment_url'] : '',
+			isset( $response['paymentUrl'] ) ? $response['paymentUrl'] : '',
+		);
+
+		foreach ( $candidates as $candidate ) {
+			if ( is_string( $candidate ) && '' !== trim( $candidate ) ) {
+				return esc_url_raw( $candidate );
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Extract access code from an initialize response.
+	 *
+	 * @param array $response Initialize response.
+	 * @return string
+	 */
+	public function get_access_code( array $response ) {
+		$candidates = array(
+			isset( $response['data']['accessCode'] ) ? $response['data']['accessCode'] : '',
+			isset( $response['data']['access_code'] ) ? $response['data']['access_code'] : '',
+			isset( $response['accessCode'] ) ? $response['accessCode'] : '',
+			isset( $response['access_code'] ) ? $response['access_code'] : '',
+		);
+
+		foreach ( $candidates as $candidate ) {
+			if ( is_string( $candidate ) && '' !== trim( $candidate ) ) {
+				return sanitize_text_field( $candidate );
+			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * Log a safe copy of an API response for troubleshooting.
+	 *
+	 * @param string $message Log message.
+	 * @param mixed  $context Context to log.
+	 * @return void
+	 */
+	public function log_debug( $message, $context = null ) {
+		if ( ! defined( 'WP_DEBUG' ) || ! WP_DEBUG ) {
+			return;
+		}
+
+		if ( null !== $context ) {
+			$message .= ' ' . wp_json_encode( $this->redact_sensitive_data( $context ) );
+		}
+
+		error_log( '[Sauki Pay] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+	}
+
+	/**
 	 * Verify payment by reference.
 	 *
 	 * @param string $reference Payment reference.
@@ -100,5 +171,32 @@ class SaukiPay_API {
 		}
 
 		return $json;
+	}
+
+	/**
+	 * Redact sensitive values before logging.
+	 *
+	 * @param mixed $value Value to redact.
+	 * @return mixed
+	 */
+	private function redact_sensitive_data( $value ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+
+		$redacted = array();
+
+		foreach ( $value as $key => $item ) {
+			$normalized_key = strtolower( (string) $key );
+
+			if ( false !== strpos( $normalized_key, 'secret' ) || false !== strpos( $normalized_key, 'authorization' ) || false !== strpos( $normalized_key, 'token' ) ) {
+				$redacted[ $key ] = '[redacted]';
+				continue;
+			}
+
+			$redacted[ $key ] = is_array( $item ) ? $this->redact_sensitive_data( $item ) : $item;
+		}
+
+		return $redacted;
 	}
 }
