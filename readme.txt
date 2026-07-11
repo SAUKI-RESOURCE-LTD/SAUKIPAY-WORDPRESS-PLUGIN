@@ -4,7 +4,7 @@ Tags: payments, woocommerce, gateway, shortcode
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.1.6
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -103,6 +103,15 @@ This plugin does not collect payment data for advertising or tracking. Customer 
 The plugin code is licensed under GPLv2 or later. Included Sauki Pay brand assets are distributed with this plugin under GPLv2 or later, subject to Sauki Pay trademark rights.
 
 == Changelog ==
+
+= 1.2.0 =
+Add a Sauki Pay Transactions admin page with summary cards, filters, pagination, and transaction verification actions.
+
+= 1.1.8 =
+Add configurable success and failure landing pages for standalone Sauki Pay payment forms.
+
+= 1.1.7 =
+Fix GiveWP callback completion for modern GiveWP donations so successful Sauki Pay payments update donations from pending to completed and redirect donors to the GiveWP result page.
 
 = 1.1.6 =
 Add Sauki Pay branding to the GiveWP modern donation payment option.

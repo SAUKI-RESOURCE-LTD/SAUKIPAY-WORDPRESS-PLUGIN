@@ -153,6 +153,60 @@ class SaukiPay_API {
 	}
 
 	/**
+	 * List merchant transactions for the WordPress admin dashboard.
+	 *
+	 * @param array $filters Query filters.
+	 * @return array|WP_Error
+	 */
+	public function list_wp_transactions( array $filters = array() ) {
+		$query = $this->build_query_string( $filters );
+		return $this->request( 'GET', '/wp/transactions' . $query );
+	}
+
+	/**
+	 * Get merchant transaction summary for the WordPress admin dashboard.
+	 *
+	 * @param array $filters Query filters.
+	 * @return array|WP_Error
+	 */
+	public function wp_transactions_summary( array $filters = array() ) {
+		$query = $this->build_query_string( $filters );
+		return $this->request( 'GET', '/wp/transactions/summary' . $query );
+	}
+
+	/**
+	 * Build a sanitized query string.
+	 *
+	 * @param array $filters Query filters.
+	 * @return string
+	 */
+	private function build_query_string( array $filters ) {
+		$query = array();
+
+		foreach ( $filters as $key => $value ) {
+			if ( '' === $value || null === $value ) {
+				continue;
+			}
+
+			$key = sanitize_key( $key );
+
+			if ( in_array( $key, array( 'page', 'limit' ), true ) ) {
+				$query[ $key ] = max( 1, absint( $value ) );
+				continue;
+			}
+
+			if ( in_array( $key, array( 'date_from', 'date_to' ), true ) ) {
+				$query[ $key ] = preg_replace( '/[^0-9\-]/', '', (string) $value );
+				continue;
+			}
+
+			$query[ $key ] = sanitize_text_field( (string) $value );
+		}
+
+		return empty( $query ) ? '' : '?' . http_build_query( $query, '', '&', PHP_QUERY_RFC3986 );
+	}
+
+	/**
 	 * Make API request.
 	 *
 	 * @param string     $method HTTP method.

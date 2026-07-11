@@ -38,8 +38,10 @@ class SaukiPay_Settings {
 			'test_secret_key' => '',
 			'live_public_key' => '',
 			'live_secret_key' => '',
-			'api_base_url'    => 'https://www.server.saukipay.net/api/v1',
-			'button_text'     => 'Pay with Sauki Pay',
+			'api_base_url'          => 'https://www.server.saukipay.net/api/v1',
+			'button_text'           => 'Pay with Sauki Pay',
+			'form_success_page_id'  => 0,
+			'form_failure_page_id'  => 0,
 		);
 	}
 
@@ -162,8 +164,10 @@ class SaukiPay_Settings {
 			'test_secret_key' => ! empty( $input['test_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['test_secret_key'] ) ) : $current['test_secret_key'],
 			'live_public_key' => isset( $input['live_public_key'] ) ? sanitize_text_field( wp_unslash( $input['live_public_key'] ) ) : '',
 			'live_secret_key' => ! empty( $input['live_secret_key'] ) ? sanitize_text_field( wp_unslash( $input['live_secret_key'] ) ) : $current['live_secret_key'],
-			'api_base_url'    => ! empty( $input['api_base_url'] ) ? esc_url_raw( wp_unslash( $input['api_base_url'] ) ) : $defaults['api_base_url'],
-			'button_text'     => ! empty( $input['button_text'] ) ? sanitize_text_field( wp_unslash( $input['button_text'] ) ) : $defaults['button_text'],
+			'api_base_url'          => ! empty( $input['api_base_url'] ) ? esc_url_raw( wp_unslash( $input['api_base_url'] ) ) : $defaults['api_base_url'],
+			'button_text'           => ! empty( $input['button_text'] ) ? sanitize_text_field( wp_unslash( $input['button_text'] ) ) : $defaults['button_text'],
+			'form_success_page_id'  => isset( $input['form_success_page_id'] ) ? absint( $input['form_success_page_id'] ) : 0,
+			'form_failure_page_id'  => isset( $input['form_failure_page_id'] ) ? absint( $input['form_failure_page_id'] ) : 0,
 		);
 	}
 
@@ -199,6 +203,36 @@ class SaukiPay_Settings {
 	}
 
 	/**
+	 * Standalone payment form result URL.
+	 *
+	 * @param string $status Payment result status.
+	 * @param string $message Result message.
+	 * @param string $fallback_url Fallback URL when no page is configured.
+	 * @return string
+	 */
+	public function form_result_url( $status, $message, $fallback_url = '' ) {
+		$page_key = 'success' === sanitize_key( $status ) ? 'form_success_page_id' : 'form_failure_page_id';
+		$page_id  = absint( $this->get( $page_key, 0 ) );
+		$url      = $page_id ? get_permalink( $page_id ) : '';
+
+		if ( ! $url && '' !== $fallback_url ) {
+			$url = $fallback_url;
+		}
+
+		if ( ! $url ) {
+			$url = home_url( '/' );
+		}
+
+		return add_query_arg(
+			array(
+				'saukipay_result'  => sanitize_key( $status ),
+				'saukipay_message' => $message,
+			),
+			$url
+		);
+	}
+
+	/**
 	 * Render settings page.
 	 *
 	 * @return void
@@ -231,9 +265,11 @@ class SaukiPay_Settings {
 						$this->render_password_field( 'live_secret_key', __( 'Live secret key', 'saukipay' ), $settings['live_secret_key'] );
 						$this->render_text_field( 'api_base_url', __( 'API base URL', 'saukipay' ), $settings['api_base_url'] );
 						$this->render_text_field( 'button_text', __( 'Button text', 'saukipay' ), $settings['button_text'] );
+						$this->render_page_field( 'form_success_page_id', __( 'Payment form success page', 'saukipay' ), $settings['form_success_page_id'], __( 'Optional. Customers using the standalone payment form are sent here after a verified successful payment.', 'saukipay' ) );
+						$this->render_page_field( 'form_failure_page_id', __( 'Payment form failure page', 'saukipay' ), $settings['form_failure_page_id'], __( 'Optional. Customers using the standalone payment form are sent here when payment fails or cannot be verified.', 'saukipay' ) );
 						?>
 						<tr>
-							<th scope="row"><?php esc_html_e( 'Shortcode callback URL', 'saukipay' ); ?></th>
+							<th scope="row"><?php esc_html_e( 'Plugin callback URL', 'saukipay' ); ?></th>
 							<td><code><?php echo esc_html( self::callback_url() ); ?></code></td>
 						</tr>
 						<tr>
@@ -309,6 +345,37 @@ class SaukiPay_Settings {
 		<tr>
 			<th scope="row"><label for="saukipay_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
 			<td><input type="text" class="regular-text" id="saukipay_<?php echo esc_attr( $key ); ?>" name="<?php echo esc_attr( self::OPTION_NAME ); ?>[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $value ); ?>"></td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Render a page select row.
+	 *
+	 * @param string $key Field key.
+	 * @param string $label Field label.
+	 * @param int    $value Selected page ID.
+	 * @param string $description Field description.
+	 * @return void
+	 */
+	private function render_page_field( $key, $label, $value, $description ) {
+		?>
+		<tr>
+			<th scope="row"><label for="saukipay_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
+			<td>
+				<?php
+				wp_dropdown_pages(
+					array(
+						'name'              => self::OPTION_NAME . '[' . $key . ']',
+						'id'                => 'saukipay_' . $key,
+						'selected'          => absint( $value ),
+						'show_option_none'  => __( 'Use default page', 'saukipay' ),
+						'option_none_value' => '0',
+					)
+				);
+				?>
+				<p class="description"><?php echo esc_html( $description ); ?></p>
+			</td>
 		</tr>
 		<?php
 	}

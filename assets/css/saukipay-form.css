@@ -414,6 +414,112 @@
 	margin: 0;
 }
 
+.saukipay-transactions-page {
+	max-width: 1400px;
+}
+
+.saukipay-admin-muted {
+	color: #60727a;
+}
+
+.saukipay-admin-summary {
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: 14px;
+	margin: 20px 0;
+}
+
+.saukipay-admin-card {
+	display: grid;
+	gap: 8px;
+	min-height: 92px;
+	padding: 18px;
+	border: 1px solid #dce7ea;
+	border-radius: 8px;
+	background: #ffffff;
+	box-shadow: 0 12px 32px rgba(16, 47, 58, 0.08);
+}
+
+.saukipay-admin-card span {
+	color: #60727a;
+	font-size: 0.82rem;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.saukipay-admin-card strong {
+	color: #102f3a;
+	font-size: 1.55rem;
+	line-height: 1.1;
+}
+
+.saukipay-admin-filters {
+	display: grid;
+	grid-template-columns: repeat(8, minmax(120px, 1fr));
+	gap: 12px;
+	align-items: end;
+	margin: 0 0 18px;
+	padding: 16px;
+	border: 1px solid #dce7ea;
+	border-radius: 8px;
+	background: #ffffff;
+}
+
+.saukipay-admin-filters label {
+	display: grid;
+	gap: 6px;
+	color: #1d2327;
+	font-weight: 700;
+}
+
+.saukipay-admin-filters input,
+.saukipay-admin-filters select {
+	width: 100%;
+	min-height: 36px;
+}
+
+.saukipay-admin-search {
+	grid-column: span 2;
+}
+
+.saukipay-admin-table {
+	border-radius: 8px;
+	overflow: hidden;
+}
+
+.saukipay-admin-table th {
+	font-weight: 800;
+}
+
+.saukipay-status {
+	display: inline-flex;
+	align-items: center;
+	min-height: 24px;
+	padding: 3px 9px;
+	border-radius: 999px;
+	background: #eef2f4;
+	color: #405463;
+	font-size: 0.78rem;
+	font-weight: 900;
+	text-transform: uppercase;
+}
+
+.saukipay-status-success {
+	background: #e7f7ed;
+	color: #116b35;
+}
+
+.saukipay-status-pending {
+	background: #fff4dc;
+	color: #8a5700;
+}
+
+.saukipay-status-failed {
+	background: #ffe8e8;
+	color: #9b1c1c;
+}
+
 .saukipay-givewp-panel {
 	display: grid;
 	gap: 16px;
@@ -482,11 +588,28 @@
 	.saukipay-builder-layout {
 		grid-template-columns: 1fr;
 	}
+
+	.saukipay-admin-summary {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.saukipay-admin-filters {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
 }
 
 @media (max-width: 782px) {
 	.saukipay-builder-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.saukipay-admin-summary,
+	.saukipay-admin-filters {
+		grid-template-columns: 1fr;
+	}
+
+	.saukipay-admin-search {
+		grid-column: auto;
 	}
 }
 

@@ -669,6 +669,7 @@ class SaukiPay_Payment_Form {
 				),
 				'status'      => 'initialized',
 				'checkout'    => esc_url_raw( $checkout_url ),
+				'return_url'  => esc_url_raw( $return_url ),
 				'created_at'  => time(),
 				'access_code' => $this->api->get_access_code( $response ),
 			),

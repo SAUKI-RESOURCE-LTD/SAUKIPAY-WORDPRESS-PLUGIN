@@ -123,7 +123,8 @@ class SaukiPay_Webhook {
 		$this->update_form_transaction( $reference, $data, 'success' === $status ? 'success' : 'failed' );
 		$this->redirect_form_result(
 			'success' === $status ? 'success' : 'failed',
-			'success' === $status ? __( 'Payment successful. Thank you.', 'saukipay' ) : __( 'Payment was not successful.', 'saukipay' )
+			'success' === $status ? __( 'Payment successful. Thank you.', 'saukipay' ) : __( 'Payment was not successful.', 'saukipay' ),
+			$reference
 		);
 	}
 
@@ -262,6 +263,10 @@ class SaukiPay_Webhook {
 	 * @return bool
 	 */
 	public function update_give_payment( $reference, array $data, $source ) {
+		if ( $this->update_modern_give_donation( $reference, $data, $source ) ) {
+			return true;
+		}
+
 		if ( ! post_type_exists( 'give_payment' ) ) {
 			return false;
 		}
@@ -301,6 +306,86 @@ class SaukiPay_Webhook {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Update a modern GiveWP donation from a Sauki Pay reference.
+	 *
+	 * @param string $reference Payment reference.
+	 * @param array  $data Verified or webhook data.
+	 * @param string $source Update source.
+	 * @return bool
+	 */
+	private function update_modern_give_donation( $reference, array $data, $source ) {
+		if ( ! class_exists( '\Give\Donations\Models\Donation' ) || ! class_exists( '\Give\Donations\ValueObjects\DonationStatus' ) ) {
+			return false;
+		}
+
+		$donation_id = $this->give_donation_id_from_reference( $reference );
+
+		if ( ! $donation_id ) {
+			return false;
+		}
+
+		try {
+			$donation = \Give\Donations\Models\Donation::find( $donation_id );
+		} catch ( \Exception $exception ) {
+			$this->api->log_debug( 'Unable to find GiveWP donation for Sauki Pay reference.', array( 'reference' => $reference, 'message' => $exception->getMessage() ) );
+			return false;
+		} catch ( \Throwable $throwable ) {
+			$this->api->log_debug( 'Unable to find GiveWP donation for Sauki Pay reference.', array( 'reference' => $reference, 'message' => $throwable->getMessage() ) );
+			return false;
+		}
+
+		if ( ! $donation || empty( $donation->id ) ) {
+			return false;
+		}
+
+		$status = isset( $data['status'] ) ? strtolower( sanitize_text_field( $data['status'] ) ) : '';
+
+		try {
+			if ( 'success' === $status ) {
+				$donation->status = \Give\Donations\ValueObjects\DonationStatus::COMPLETE();
+				$this->add_modern_give_donation_note( $donation->id, sprintf( 'Sauki Pay %s verification successful. Reference: %s', sanitize_text_field( $source ), $reference ) );
+			} else {
+				$donation->status = \Give\Donations\ValueObjects\DonationStatus::FAILED();
+				$this->add_modern_give_donation_note( $donation->id, sprintf( 'Sauki Pay %s reported failed payment. Reference: %s', sanitize_text_field( $source ), $reference ) );
+			}
+
+			$donation->gatewayTransactionId = sanitize_text_field( $reference );
+
+			$donation->save();
+		} catch ( \Exception $exception ) {
+			$this->api->log_debug( 'Unable to update GiveWP donation from Sauki Pay callback.', array( 'donation_id' => $donation_id, 'reference' => $reference, 'message' => $exception->getMessage() ) );
+			return false;
+		} catch ( \Throwable $throwable ) {
+			$this->api->log_debug( 'Unable to update GiveWP donation from Sauki Pay callback.', array( 'donation_id' => $donation_id, 'reference' => $reference, 'message' => $throwable->getMessage() ) );
+			return false;
+		}
+
+		$this->update_give_payment_meta( $donation->id, '_saukipay_last_status', $status );
+		$this->update_give_payment_meta( $donation->id, '_saukipay_payment_channel', isset( $data['paymentChannel'] ) ? sanitize_text_field( $data['paymentChannel'] ) : '' );
+
+		if ( 'callback' === $source ) {
+			wp_safe_redirect( $this->give_redirect_url( 'success' === $status, $donation->id ) );
+			exit;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Extract GiveWP donation ID from references like GIVE-2727-20260711190733-AbCd12.
+	 *
+	 * @param string $reference Payment reference.
+	 * @return int
+	 */
+	private function give_donation_id_from_reference( $reference ) {
+		if ( preg_match( '/^GIVE-(\d+)-/i', (string) $reference, $matches ) ) {
+			return absint( $matches[1] );
+		}
+
+		return 0;
 	}
 
 	/**
@@ -355,12 +440,39 @@ class SaukiPay_Webhook {
 	}
 
 	/**
+	 * Add a note to a modern GiveWP donation.
+	 *
+	 * @param int    $donation_id Donation ID.
+	 * @param string $note Donation note.
+	 * @return void
+	 */
+	private function add_modern_give_donation_note( $donation_id, $note ) {
+		if ( class_exists( '\Give\Donations\Models\DonationNote' ) ) {
+			try {
+				\Give\Donations\Models\DonationNote::create(
+					array(
+						'donationId' => absint( $donation_id ),
+						'content'    => sanitize_text_field( $note ),
+					)
+				);
+				return;
+			} catch ( \Exception $exception ) {
+				$this->api->log_debug( 'Unable to add GiveWP donation note.', array( 'donation_id' => $donation_id, 'message' => $exception->getMessage() ) );
+			} catch ( \Throwable $throwable ) {
+				$this->api->log_debug( 'Unable to add GiveWP donation note.', array( 'donation_id' => $donation_id, 'message' => $throwable->getMessage() ) );
+			}
+		}
+
+		$this->add_give_payment_note( $donation_id, $note );
+	}
+
+	/**
 	 * Get GiveWP callback redirect URL.
 	 *
 	 * @param bool $success Whether payment succeeded.
 	 * @return string
 	 */
-	private function give_redirect_url( $success ) {
+	private function give_redirect_url( $success, $donation_id = 0 ) {
 		if ( $success && function_exists( 'give_get_success_page_uri' ) ) {
 			return give_get_success_page_uri();
 		}
@@ -424,14 +536,18 @@ class SaukiPay_Webhook {
 	 * @param string $message Result message.
 	 * @return void
 	 */
-	private function redirect_form_result( $status, $message ) {
-		$url = add_query_arg(
-			array(
-				'saukipay_result'  => sanitize_key( $status ),
-				'saukipay_message' => rawurlencode( $message ),
-			),
-			home_url( '/' )
-		);
+	private function redirect_form_result( $status, $message, $reference = '' ) {
+		$fallback_url = '';
+
+		if ( '' !== $reference ) {
+			$transaction = get_option( 'saukipay_form_txn_' . sanitize_key( $reference ), array() );
+
+			if ( is_array( $transaction ) && ! empty( $transaction['return_url'] ) ) {
+				$fallback_url = esc_url_raw( $transaction['return_url'] );
+			}
+		}
+
+		$url = $this->settings->form_result_url( $status, $message, $fallback_url );
 
 		wp_safe_redirect( $url );
 		exit;

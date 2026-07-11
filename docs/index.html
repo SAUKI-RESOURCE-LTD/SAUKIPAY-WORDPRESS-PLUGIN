@@ -238,7 +238,7 @@
 	<header class="hero">
 		<div class="hero-inner">
 			<img class="logo" src="assets/saukipay-logo.png" alt="Sauki Pay">
-			<p class="kicker">WordPress Plugin Guide · Version 1.1.6</p>
+			<p class="kicker">WordPress Plugin Guide · Version 1.2.0</p>
 			<h1>Accept Sauki Pay payments on your WordPress website.</h1>
 			<p>Use Sauki Pay at WooCommerce checkout, GiveWP donation forms, or add a modern standalone payment form to any page with a shortcode.</p>
 		</div>
@@ -267,8 +267,8 @@
 			<section class="section">
 				<h2>Download The Plugin</h2>
 				<p>You can download the Sauki Pay WordPress plugin from the official GitHub release page.</p>
-				<p><a href="https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/tag/v1.1.6">Open the Sauki Pay WordPress plugin release page</a></p>
-				<p><a href="https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.1.6/saukipay-wordpress-plugin-v1.1.6.zip">Download the plugin ZIP directly</a></p>
+				<p><a href="https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/tag/v1.2.0">Open the Sauki Pay WordPress plugin release page</a></p>
+				<p><a href="https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.2.0/saukipay-wordpress-plugin-v1.2.0.zip">Download the plugin ZIP directly</a></p>
 				<div class="callout">Download the ZIP file before installing the plugin in WordPress.</div>
 			</section>
 			<section class="section">
@@ -288,6 +288,7 @@
 					<li>Enable the plugin.</li>
 					<li>Choose test mode or live mode.</li>
 					<li>Enter your Sauki Pay public and secret keys.</li>
+					<li>Choose optional success and failure pages for standalone payment forms.</li>
 					<li>Confirm the API base URL and save your settings.</li>
 				</ol>
 				<div class="callout">Use test mode while setting up and switch to live mode only when you are ready to accept real payments.</div>
@@ -295,6 +296,7 @@
 			<section class="section">
 				<h2>Callback And Webhook URLs</h2>
 				<p>The settings page displays the URLs your website uses for payment confirmation. Copy the webhook URL from the settings page and add it to your Sauki Pay dashboard.</p>
+				<p>The plugin callback URL and webhook URL should stay the same unless your website domain changes. Success and failure pages are internal WordPress landing pages and do not need to be added to the Sauki Pay dashboard.</p>
 				<p>If you are testing locally, your WordPress site must be reachable from the internet. A public staging website is recommended.</p>
 			</section>
 			<section class="section">
@@ -326,6 +328,7 @@
 				<code class="shortcode">[saukipay_payment_form]</code>
 				<code class="shortcode">[saukipay_payment_form amount="5000" currency="NGN" title="Pay Registration Fee" fixed_amount="yes"]</code>
 				<code class="shortcode">[saukipay_payment_form currency="NGN" title="Donate" preset_amounts="1000,10000,50000" allow_custom_amount="yes"]</code>
+				<div class="callout">For a polished payment journey, create dedicated success and failure pages in WordPress, then select them in Sauki Pay settings. If no pages are selected, the plugin returns customers to the original page where the form was submitted.</div>
 			</section>
 			<section class="section">
 				<h2>Payment Form Options</h2>
@@ -360,6 +363,16 @@
 				<p>Sauki Pay can send webhook events to your website after payment. The plugin verifies webhook requests before processing them.</p>
 				<p>When a webhook is valid and handled successfully, your website returns <code>ok</code>.</p>
 				<div class="callout">Webhooks help keep WooCommerce orders, GiveWP donations, and shortcode payment records updated even if a customer closes the browser before returning to your website.</div>
+			</section>
+			<section class="section">
+				<h2>Transactions Dashboard</h2>
+				<p>Open Sauki Pay &gt; Transactions to view processed invoices and payments across WooCommerce, GiveWP, and standalone payment forms.</p>
+				<ul>
+					<li>Filter by status, environment, source, currency, date range, reference, email, or phone.</li>
+					<li>Review summary cards for total, successful, pending, and failed transactions.</li>
+					<li>Use the verify action to re-check a transaction reference with Sauki Pay.</li>
+				</ul>
+				<div class="callout">The Transactions dashboard requires the Sauki Pay backend WordPress endpoints <code>/wp/transactions</code> and <code>/wp/transactions/summary</code>.</div>
 			</section>
 			<section class="section">
 				<h2>Plugin Screenshots</h2>
@@ -397,7 +410,7 @@
 				<p>If you need help with your Sauki Pay account or API keys, contact Sauki Pay support.</p>
 			</section>
 		</div>
-		<p class="footer">Sauki Pay WordPress Plugin Guide · Version 1.1.6</p>
+		<p class="footer">Sauki Pay WordPress Plugin Guide · Version 1.2.0</p>
 	</main>
 </body>
 </html>
