@@ -4,7 +4,7 @@ Tags: payments, woocommerce, gateway, shortcode
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -102,7 +102,23 @@ This plugin does not collect payment data for advertising or tracking. Customer 
 
 The plugin code is licensed under GPLv2 or later. Included Sauki Pay brand assets are distributed with this plugin under GPLv2 or later, subject to Sauki Pay trademark rights.
 
+== Credits ==
+
+Official plugin author: Sauki Pay.
+
+Developed by Ayomikun Oloyede, Co-founder / Lead backend Engineer.
+
+GitHub: https://github.com/ayo83
+
+LinkedIn: https://www.linkedin.com/in/ayo-oloyede-078907164/
+
 == Changelog ==
+
+= 1.2.2 =
+Add a local Form Payments admin page backed by a custom WordPress database table for standalone shortcode payment submissions.
+
+= 1.2.1 =
+Fix callback redirects when Sauki Pay appends checkout status to an existing callback query string, and allow configured success/failure pages to handle GiveWP payment results.
 
 = 1.2.0 =
 Add a Sauki Pay Transactions admin page with summary cards, filters, pagination, and transaction verification actions.

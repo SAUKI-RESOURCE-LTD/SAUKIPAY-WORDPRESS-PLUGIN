@@ -1,6 +1,6 @@
 # Sauki Pay WordPress Plugin Guide
 
-Version: 1.2.0
+Version: 1.2.2
 
 ## What This Plugin Does
 
@@ -26,11 +26,11 @@ The plugin connects securely to the Sauki Pay API and redirects customers or don
 
 You can download the Sauki Pay WordPress plugin from the official GitHub release page:
 
-`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/tag/v1.2.0`
+`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/tag/v1.2.2`
 
 Direct plugin ZIP download:
 
-`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.2.0/saukipay-wordpress-plugin-v1.2.0.zip`
+`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.2.2/saukipay-wordpress-plugin-v1.2.2.zip`
 
 Download the ZIP file before installing the plugin in WordPress.
 
@@ -165,6 +165,18 @@ You can:
 
 The Transactions dashboard requires the Sauki Pay backend WordPress endpoints `/wp/transactions` and `/wp/transactions/summary`.
 
+## Form Payments
+
+Open Sauki Pay > Form Payments to view standalone payment form submissions saved on this WordPress site.
+
+You can:
+
+1. See payer name, email, phone, amount, currency, environment, status, and payment dates.
+2. Filter by status, environment, currency, date range, reference, name, email, or phone.
+3. Use the verify action to re-check a form payment reference with Sauki Pay.
+
+Form Payments is stored locally in your WordPress database and is only for standalone shortcode payment form submissions.
+
 ## Plugin Screenshots
 
 These examples show the Sauki Pay settings, form builder, standalone payment form, and GiveWP checkout experience. Sensitive keys and merchant-site URLs are hidden in the documentation images.
@@ -184,6 +196,16 @@ Standalone payment form.
 ![GiveWP donation checkout with Sauki Pay selected](assets/saukipay-givewp-checkout-sanitized.jpg)
 
 GiveWP checkout with Sauki Pay.
+
+## Credits
+
+Official plugin author: Sauki Pay.
+
+Developed by Ayomikun Oloyede, Co-founder / Lead backend Engineer.
+
+GitHub: `https://github.com/ayo83`
+
+LinkedIn: `https://www.linkedin.com/in/ayo-oloyede-078907164/`
 
 ## Going Live
 

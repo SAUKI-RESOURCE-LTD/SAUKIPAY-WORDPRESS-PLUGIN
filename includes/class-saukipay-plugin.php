@@ -11,10 +11,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-settings.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-api.php';
+require_once SAUKIPAY_PATH . 'includes/class-saukipay-form-payments.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-webhook.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-payment-form.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-give-gateway.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-admin-transactions.php';
+require_once SAUKIPAY_PATH . 'includes/class-saukipay-admin-form-payments.php';
 
 /**
  * Coordinates plugin services.
@@ -56,6 +58,13 @@ final class SaukiPay_Plugin {
 	public $payment_form;
 
 	/**
+	 * Standalone form payment storage.
+	 *
+	 * @var SaukiPay_Form_Payments
+	 */
+	public $form_payments;
+
+	/**
 	 * Get singleton instance.
 	 *
 	 * @return SaukiPay_Plugin
@@ -72,18 +81,22 @@ final class SaukiPay_Plugin {
 	 * Constructor.
 	 */
 	private function __construct() {
-		$this->settings     = new SaukiPay_Settings();
-		$this->api          = new SaukiPay_API( $this->settings );
-		$this->webhook      = new SaukiPay_Webhook( $this->settings, $this->api );
-		$this->payment_form = new SaukiPay_Payment_Form( $this->settings, $this->api );
-		$give_gateway       = new SaukiPay_Give_Gateway( $this->settings, $this->api );
-		$transactions       = new SaukiPay_Admin_Transactions( $this->settings, $this->api );
+		$this->settings      = new SaukiPay_Settings();
+		$this->api           = new SaukiPay_API( $this->settings );
+		$this->form_payments = new SaukiPay_Form_Payments();
+		$this->webhook       = new SaukiPay_Webhook( $this->settings, $this->api, $this->form_payments );
+		$this->payment_form  = new SaukiPay_Payment_Form( $this->settings, $this->api, $this->form_payments );
+		$give_gateway        = new SaukiPay_Give_Gateway( $this->settings, $this->api );
+		$transactions        = new SaukiPay_Admin_Transactions( $this->settings, $this->api );
+		$form_payments_page  = new SaukiPay_Admin_Form_Payments( $this->api, $this->form_payments );
 
 		$this->settings->init();
+		$this->form_payments->maybe_install();
 		$this->webhook->init();
 		$this->payment_form->init();
 		$give_gateway->init();
 		$transactions->init();
+		$form_payments_page->init();
 
 		add_filter( 'plugin_action_links_' . plugin_basename( SAUKIPAY_FILE ), array( $this, 'plugin_action_links' ) );
 
@@ -104,6 +117,7 @@ final class SaukiPay_Plugin {
 			add_option( SaukiPay_Settings::OPTION_NAME, SaukiPay_Settings::defaults() );
 		}
 
+		SaukiPay_Form_Payments::install();
 		flush_rewrite_rules();
 	}
 

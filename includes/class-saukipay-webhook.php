@@ -28,14 +28,23 @@ class SaukiPay_Webhook {
 	private $api;
 
 	/**
+	 * Form payment storage.
+	 *
+	 * @var SaukiPay_Form_Payments
+	 */
+	private $form_payments;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param SaukiPay_Settings $settings Settings service.
-	 * @param SaukiPay_API      $api API client.
+	 * @param SaukiPay_API           $api API client.
+	 * @param SaukiPay_Form_Payments $form_payments Form payment storage.
 	 */
-	public function __construct( SaukiPay_Settings $settings, SaukiPay_API $api ) {
-		$this->settings = $settings;
-		$this->api      = $api;
+	public function __construct( SaukiPay_Settings $settings, SaukiPay_API $api, SaukiPay_Form_Payments $form_payments ) {
+		$this->settings      = $settings;
+		$this->api           = $api;
+		$this->form_payments = $form_payments;
 	}
 
 	/**
@@ -78,8 +87,16 @@ class SaukiPay_Webhook {
 		$listener = get_query_var( 'saukipay-listener' );
 
 		if ( empty( $listener ) && isset( $_GET['saukipay-listener'] ) ) {
-			$listener = sanitize_key( wp_unslash( $_GET['saukipay-listener'] ) );
+			$listener = sanitize_text_field( wp_unslash( $_GET['saukipay-listener'] ) );
 		}
+
+		// Sauki checkout may append ?status=... to a callback URL that already has
+		// query args. Treat callback?status=successful as callback.
+		if ( is_string( $listener ) && false !== strpos( $listener, '?' ) ) {
+			$listener = strtok( $listener, '?' );
+		}
+
+		$listener = sanitize_key( (string) $listener );
 
 		if ( 'callback' === $listener ) {
 			$this->handle_callback();
@@ -473,6 +490,16 @@ class SaukiPay_Webhook {
 	 * @return string
 	 */
 	private function give_redirect_url( $success, $donation_id = 0 ) {
+		$form_status = $success ? 'success' : 'failed';
+		$form_url    = $this->settings->form_result_url(
+			$form_status,
+			$success ? __( 'Payment successful. Thank you.', 'saukipay' ) : __( 'Payment was not successful.', 'saukipay' )
+		);
+
+		if ( home_url( '/' ) !== remove_query_arg( array( 'saukipay_result', 'saukipay_message' ), $form_url ) ) {
+			return $form_url;
+		}
+
 		if ( $success && function_exists( 'give_get_success_page_uri' ) ) {
 			return give_get_success_page_uri();
 		}
@@ -527,6 +554,43 @@ class SaukiPay_Webhook {
 			$transaction['payment_data'] = $data;
 			update_option( 'saukipay_form_txn_' . sanitize_key( $reference ), $transaction, false );
 		}
+
+		$customer = isset( $data['customer'] ) && is_array( $data['customer'] ) ? $data['customer'] : array();
+		$update   = array(
+			'status'        => sanitize_key( $status ),
+			'verified_data' => $data,
+			'paid_at'       => 'success' === sanitize_key( $status ) ? current_time( 'mysql' ) : null,
+		);
+
+		if ( isset( $data['amount'] ) ) {
+			$update['amount'] = (float) $data['amount'];
+		}
+
+		if ( isset( $data['currency'] ) ) {
+			$update['currency'] = sanitize_text_field( $data['currency'] );
+		}
+
+		if ( isset( $customer['payerName'] ) ) {
+			$update['payer_name'] = sanitize_text_field( $customer['payerName'] );
+		}
+
+		if ( isset( $customer['email'] ) ) {
+			$update['email'] = sanitize_email( $customer['email'] );
+		}
+
+		if ( isset( $customer['phoneNumber'] ) ) {
+			$update['phone'] = sanitize_text_field( $customer['phoneNumber'] );
+		}
+
+		if ( isset( $data['environment'] ) ) {
+			$update['environment'] = sanitize_key( $data['environment'] );
+		}
+
+		if ( isset( $data['paymentChannel'] ) ) {
+			$update['payment_channel'] = sanitize_text_field( $data['paymentChannel'] );
+		}
+
+		$this->form_payments->update_by_reference( $reference, $update );
 	}
 
 	/**

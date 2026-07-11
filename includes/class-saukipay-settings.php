@@ -265,8 +265,8 @@ class SaukiPay_Settings {
 						$this->render_password_field( 'live_secret_key', __( 'Live secret key', 'saukipay' ), $settings['live_secret_key'] );
 						$this->render_text_field( 'api_base_url', __( 'API base URL', 'saukipay' ), $settings['api_base_url'] );
 						$this->render_text_field( 'button_text', __( 'Button text', 'saukipay' ), $settings['button_text'] );
-						$this->render_page_field( 'form_success_page_id', __( 'Payment form success page', 'saukipay' ), $settings['form_success_page_id'], __( 'Optional. Customers using the standalone payment form are sent here after a verified successful payment.', 'saukipay' ) );
-						$this->render_page_field( 'form_failure_page_id', __( 'Payment form failure page', 'saukipay' ), $settings['form_failure_page_id'], __( 'Optional. Customers using the standalone payment form are sent here when payment fails or cannot be verified.', 'saukipay' ) );
+						$this->render_page_field( 'form_success_page_id', __( 'Success redirect page', 'saukipay' ), $settings['form_success_page_id'], __( 'Optional. Standalone payment form and GiveWP customers are sent here after a verified successful payment.', 'saukipay' ) );
+						$this->render_page_field( 'form_failure_page_id', __( 'Failure redirect page', 'saukipay' ), $settings['form_failure_page_id'], __( 'Optional. Standalone payment form and GiveWP customers are sent here when payment fails or cannot be verified.', 'saukipay' ) );
 						?>
 						<tr>
 							<th scope="row"><?php esc_html_e( 'Plugin callback URL', 'saukipay' ); ?></th>
@@ -328,6 +328,12 @@ class SaukiPay_Settings {
 				</table>
 				<?php submit_button(); ?>
 			</form>
+			<p class="description saukipay-admin-credit">
+				<?php esc_html_e( 'Sauki Pay WordPress Plugin developed by Ayomikun Oloyede, Co-founder / Lead backend Engineer.', 'saukipay' ); ?>
+				<a href="https://github.com/ayo83" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'GitHub', 'saukipay' ); ?></a>
+				<span aria-hidden="true"> | </span>
+				<a href="https://www.linkedin.com/in/ayo-oloyede-078907164/" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'LinkedIn', 'saukipay' ); ?></a>
+			</p>
 		</div>
 		<?php
 	}

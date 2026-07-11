@@ -30,14 +30,23 @@ class SaukiPay_Payment_Form {
 	private $api;
 
 	/**
+	 * Form payment storage.
+	 *
+	 * @var SaukiPay_Form_Payments
+	 */
+	private $form_payments;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param SaukiPay_Settings $settings Settings service.
-	 * @param SaukiPay_API      $api API client.
+	 * @param SaukiPay_API           $api API client.
+	 * @param SaukiPay_Form_Payments $form_payments Form payment storage.
 	 */
-	public function __construct( SaukiPay_Settings $settings, SaukiPay_API $api ) {
-		$this->settings = $settings;
-		$this->api      = $api;
+	public function __construct( SaukiPay_Settings $settings, SaukiPay_API $api, SaukiPay_Form_Payments $form_payments ) {
+		$this->settings      = $settings;
+		$this->api           = $api;
+		$this->form_payments = $form_payments;
 	}
 
 	/**
@@ -626,6 +635,22 @@ class SaukiPay_Payment_Form {
 		}
 
 		$reference = $this->create_reference();
+		$environment = $this->settings->is_test_mode() ? 'test' : 'live';
+
+		$this->form_payments->insert(
+			array(
+				'reference'   => $reference,
+				'status'      => 'pending',
+				'amount'      => $amount,
+				'currency'    => $currency,
+				'payer_name'  => $full_name,
+				'email'       => $email,
+				'phone'       => $phone,
+				'environment' => $environment,
+				'source_url'  => $return_url,
+			)
+		);
+
 		$payload   = array(
 			'reference'    => $reference,
 			'amount'       => $amount,
@@ -646,6 +671,17 @@ class SaukiPay_Payment_Form {
 
 		if ( is_wp_error( $response ) ) {
 			$this->api->log_debug( 'Shortcode payment initialization failed.', array( 'error' => $response->get_error_message() ) );
+			$this->form_payments->update_by_reference(
+				$reference,
+				array(
+					'status'       => 'failed',
+					'raw_response' => array(
+						'error'      => $response->get_error_message(),
+						'error_code' => $response->get_error_code(),
+						'error_data' => $response->get_error_data(),
+					),
+				)
+			);
 			$this->payment_error( __( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), array( 'error' => $response->get_error_message(), 'error_code' => $response->get_error_code(), 'error_data' => $response->get_error_data() ), $return_url );
 		}
 
@@ -653,8 +689,25 @@ class SaukiPay_Payment_Form {
 
 		if ( '' === $checkout_url ) {
 			$this->api->log_debug( 'Shortcode payment initialization response missing checkout URL.', $response );
+			$this->form_payments->update_by_reference(
+				$reference,
+				array(
+					'status'       => 'failed',
+					'raw_response' => $response,
+				)
+			);
 			$this->payment_error( __( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), array( 'reason' => 'Checkout URL missing from Sauki Pay response.', 'response' => $response ), $return_url );
 		}
+
+		$this->form_payments->update_by_reference(
+			$reference,
+			array(
+				'status'       => 'pending',
+				'checkout_url' => $checkout_url,
+				'access_code'  => $this->api->get_access_code( $response ),
+				'raw_response' => $response,
+			)
+		);
 
 		update_option(
 			'saukipay_form_txn_' . sanitize_key( $reference ),
