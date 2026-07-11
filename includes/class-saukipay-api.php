@@ -47,22 +47,51 @@ class SaukiPay_API {
 	 */
 	public function get_checkout_url( array $response ) {
 		$candidates = array(
+			isset( $response['data']['data']['checkout'] ) ? $response['data']['data']['checkout'] : '',
+			isset( $response['data']['data']['checkout_url'] ) ? $response['data']['data']['checkout_url'] : '',
+			isset( $response['data']['data']['checkoutUrl'] ) ? $response['data']['data']['checkoutUrl'] : '',
+			isset( $response['data']['data']['payment_url'] ) ? $response['data']['data']['payment_url'] : '',
+			isset( $response['data']['data']['paymentUrl'] ) ? $response['data']['data']['paymentUrl'] : '',
+			isset( $response['data']['data']['payment_link'] ) ? $response['data']['data']['payment_link'] : '',
+			isset( $response['data']['data']['paymentLink'] ) ? $response['data']['data']['paymentLink'] : '',
+			isset( $response['data']['data']['authorization_url'] ) ? $response['data']['data']['authorization_url'] : '',
+			isset( $response['data']['data']['authorizationUrl'] ) ? $response['data']['data']['authorizationUrl'] : '',
+			isset( $response['data']['data']['url'] ) ? $response['data']['data']['url'] : '',
+			isset( $response['data']['data']['link'] ) ? $response['data']['data']['link'] : '',
 			isset( $response['data']['checkout'] ) ? $response['data']['checkout'] : '',
 			isset( $response['data']['checkout_url'] ) ? $response['data']['checkout_url'] : '',
 			isset( $response['data']['checkoutUrl'] ) ? $response['data']['checkoutUrl'] : '',
 			isset( $response['data']['payment_url'] ) ? $response['data']['payment_url'] : '',
 			isset( $response['data']['paymentUrl'] ) ? $response['data']['paymentUrl'] : '',
+			isset( $response['data']['payment_link'] ) ? $response['data']['payment_link'] : '',
+			isset( $response['data']['paymentLink'] ) ? $response['data']['paymentLink'] : '',
+			isset( $response['data']['authorization_url'] ) ? $response['data']['authorization_url'] : '',
+			isset( $response['data']['authorizationUrl'] ) ? $response['data']['authorizationUrl'] : '',
+			isset( $response['data']['url'] ) ? $response['data']['url'] : '',
+			isset( $response['data']['link'] ) ? $response['data']['link'] : '',
 			isset( $response['checkout'] ) ? $response['checkout'] : '',
 			isset( $response['checkout_url'] ) ? $response['checkout_url'] : '',
 			isset( $response['checkoutUrl'] ) ? $response['checkoutUrl'] : '',
 			isset( $response['payment_url'] ) ? $response['payment_url'] : '',
 			isset( $response['paymentUrl'] ) ? $response['paymentUrl'] : '',
+			isset( $response['payment_link'] ) ? $response['payment_link'] : '',
+			isset( $response['paymentLink'] ) ? $response['paymentLink'] : '',
+			isset( $response['authorization_url'] ) ? $response['authorization_url'] : '',
+			isset( $response['authorizationUrl'] ) ? $response['authorizationUrl'] : '',
+			isset( $response['url'] ) ? $response['url'] : '',
+			isset( $response['link'] ) ? $response['link'] : '',
 		);
 
 		foreach ( $candidates as $candidate ) {
 			if ( is_string( $candidate ) && '' !== trim( $candidate ) ) {
 				return esc_url_raw( $candidate );
 			}
+		}
+
+		$access_code = $this->get_access_code( $response );
+
+		if ( '' !== $access_code ) {
+			return esc_url_raw( 'https://checkout.saukipay.net/' . rawurlencode( $access_code ) );
 		}
 
 		return '';
@@ -76,6 +105,8 @@ class SaukiPay_API {
 	 */
 	public function get_access_code( array $response ) {
 		$candidates = array(
+			isset( $response['data']['data']['accessCode'] ) ? $response['data']['data']['accessCode'] : '',
+			isset( $response['data']['data']['access_code'] ) ? $response['data']['data']['access_code'] : '',
 			isset( $response['data']['accessCode'] ) ? $response['data']['accessCode'] : '',
 			isset( $response['data']['access_code'] ) ? $response['data']['access_code'] : '',
 			isset( $response['accessCode'] ) ? $response['accessCode'] : '',

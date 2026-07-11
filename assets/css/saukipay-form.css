@@ -1,12 +1,24 @@
 .saukipay-form-shell {
 	width: 100%;
-	max-width: 480px;
+	max-width: 560px;
 	box-sizing: border-box;
 	border: 1px solid rgba(20, 68, 78, 0.12);
 	border-radius: 18px;
 	background: #ffffff;
 	box-shadow: 0 22px 60px rgba(16, 47, 58, 0.14);
 	overflow: hidden;
+}
+
+.saukipay-form-width-compact {
+	max-width: 480px;
+}
+
+.saukipay-form-width-wide {
+	max-width: 560px;
+}
+
+.saukipay-form-width-full {
+	max-width: 720px;
 }
 
 .saukipay-form-brand {
@@ -92,6 +104,14 @@
 	font-weight: 800;
 }
 
+.saukipay-form-heading p {
+	margin: 8px 0 0;
+	color: rgba(16, 47, 58, 0.68);
+	font-size: 0.95rem;
+	line-height: 1.45;
+	font-weight: 600;
+}
+
 .saukipay-form-heading strong {
 	flex: 0 0 auto;
 	display: inline-flex;
@@ -175,6 +195,14 @@
 	transform: none;
 }
 
+.saukipay-form-footer {
+	margin: -2px 0 0;
+	color: rgba(16, 47, 58, 0.58);
+	font-size: 0.84rem;
+	line-height: 1.45;
+	text-align: center;
+}
+
 .saukipay-result {
 	max-width: 480px;
 	box-sizing: border-box;
@@ -196,6 +224,29 @@
 	color: #842029;
 }
 
+.saukipay-debug {
+	max-width: 480px;
+	box-sizing: border-box;
+	margin: 0 0 16px;
+	padding: 12px 14px;
+	border: 1px solid rgba(16, 47, 58, 0.18);
+	border-radius: 12px;
+	background: #f8fbfc;
+	color: #102f3a;
+}
+
+.saukipay-debug summary {
+	cursor: pointer;
+	font-weight: 800;
+}
+
+.saukipay-debug pre {
+	max-height: 360px;
+	overflow: auto;
+	white-space: pre-wrap;
+	font-size: 0.85rem;
+}
+
 .saukipay-form-preview {
 	max-width: 100%;
 	box-shadow: 0 18px 44px rgba(16, 47, 58, 0.12);
@@ -213,6 +264,78 @@
 .saukipay-form-preview .saukipay-form button {
 	min-height: 44px;
 	box-shadow: none;
+}
+
+.saukipay-builder-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 460px;
+	gap: 24px;
+	align-items: start;
+	max-width: 1280px;
+}
+
+.saukipay-builder-card {
+	background: #ffffff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	padding: 22px;
+}
+
+.saukipay-builder-card h2 {
+	margin: 0 0 16px;
+	padding: 0 0 10px;
+	border-bottom: 1px solid #dcdcde;
+	color: #102f3a;
+}
+
+.saukipay-builder-card h2:not(:first-of-type) {
+	margin-top: 26px;
+}
+
+.saukipay-builder-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 18px;
+}
+
+.saukipay-builder-grid label {
+	display: grid;
+	gap: 7px;
+	color: #1d2327;
+	font-weight: 700;
+}
+
+.saukipay-builder-grid input[type="text"],
+.saukipay-builder-grid input[type="number"],
+.saukipay-builder-grid select {
+	width: 100%;
+	max-width: 100%;
+	min-height: 42px;
+	border-radius: 6px;
+}
+
+.saukipay-builder-check {
+	align-content: center;
+	grid-template-columns: auto 1fr;
+	align-items: center;
+	gap: 10px !important;
+	padding-top: 22px;
+}
+
+.saukipay-builder-check input {
+	margin: 0;
+}
+
+@media (max-width: 1180px) {
+	.saukipay-builder-layout {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 782px) {
+	.saukipay-builder-grid {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media (max-width: 520px) {

@@ -93,8 +93,11 @@ class SaukiPay_Payment_Form {
 				'amount'       => $form_settings['amount'],
 				'currency'     => $form_settings['currency'],
 				'title'        => $form_settings['title'],
+				'description'  => $form_settings['description'],
 				'button_text'  => $form_settings['button_text'],
+				'footer_text'  => $form_settings['footer_text'],
 				'fixed_amount' => $form_settings['fixed_amount'],
+				'width'        => $form_settings['width'],
 			),
 			$atts,
 			'saukipay_payment_form'
@@ -106,11 +109,12 @@ class SaukiPay_Payment_Form {
 		$fixed_amount = filter_var( $atts['fixed_amount'], FILTER_VALIDATE_BOOLEAN );
 		$amount       = '' !== $atts['amount'] ? (float) $atts['amount'] : 0;
 		$currency     = sanitize_text_field( strtoupper( $atts['currency'] ) );
+		$width        = $this->sanitize_width( $atts['width'] );
 
 		ob_start();
 		$this->render_result_notice();
 		?>
-		<div class="saukipay-form-shell">
+		<div class="saukipay-form-shell saukipay-form-width-<?php echo esc_attr( $width ); ?>">
 			<div class="saukipay-form-brand">
 				<div class="saukipay-form-brand-main">
 					<span class="saukipay-form-icon"><img src="<?php echo esc_url( SAUKIPAY_URL . 'assets/images/saukipay-icon.png' ); ?>" alt=""></span>
@@ -120,7 +124,12 @@ class SaukiPay_Payment_Form {
 			</div>
 			<form class="saukipay-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<div class="saukipay-form-heading">
-					<h3><?php echo esc_html( $atts['title'] ); ?></h3>
+					<div>
+						<h3><?php echo esc_html( $atts['title'] ); ?></h3>
+						<?php if ( '' !== trim( (string) $atts['description'] ) ) : ?>
+							<p><?php echo esc_html( $atts['description'] ); ?></p>
+						<?php endif; ?>
+					</div>
 					<?php if ( $amount > 0 ) : ?>
 						<strong><?php echo esc_html( $currency . ' ' . number_format_i18n( $amount, 2 ) ); ?></strong>
 					<?php endif; ?>
@@ -128,6 +137,7 @@ class SaukiPay_Payment_Form {
 				<input type="hidden" name="action" value="saukipay_form_pay">
 				<input type="hidden" name="currency" value="<?php echo esc_attr( $currency ); ?>">
 				<input type="hidden" name="fixed_amount" value="<?php echo esc_attr( $fixed_amount ? 'yes' : 'no' ); ?>">
+				<input type="hidden" name="return_url" value="<?php echo esc_url( $this->current_url() ); ?>">
 				<?php wp_nonce_field( 'saukipay_form_pay', 'saukipay_nonce' ); ?>
 
 				<label>
@@ -153,6 +163,9 @@ class SaukiPay_Payment_Form {
 					<span><?php echo esc_html( $atts['button_text'] ); ?></span>
 					<span aria-hidden="true">→</span>
 				</button>
+				<?php if ( '' !== trim( (string) $atts['footer_text'] ) ) : ?>
+					<p class="saukipay-form-footer"><?php echo esc_html( $atts['footer_text'] ); ?></p>
+				<?php endif; ?>
 			</form>
 		</div>
 		<?php
@@ -183,10 +196,13 @@ class SaukiPay_Payment_Form {
 	public function get_form_builder_defaults() {
 		return array(
 			'title'        => 'Pay with Sauki Pay',
+			'description'  => '',
 			'amount'       => '',
 			'currency'     => 'NGN',
 			'button_text'  => $this->settings->get( 'button_text', 'Pay with Sauki Pay' ),
+			'footer_text'  => 'You will be redirected to Sauki Pay secure checkout.',
 			'fixed_amount' => 'no',
+			'width'        => 'wide',
 		);
 	}
 
@@ -213,19 +229,25 @@ class SaukiPay_Payment_Form {
 		check_admin_referer( 'saukipay_save_form_builder' );
 
 		$title        = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+		$description  = isset( $_POST['description'] ) ? sanitize_text_field( wp_unslash( $_POST['description'] ) ) : '';
 		$amount       = isset( $_POST['amount'] ) ? (float) wp_unslash( $_POST['amount'] ) : 0;
-		$currency     = isset( $_POST['currency'] ) ? sanitize_text_field( strtoupper( wp_unslash( $_POST['currency'] ) ) ) : 'NGN';
+		$currency     = isset( $_POST['currency'] ) ? $this->sanitize_currency( wp_unslash( $_POST['currency'] ) ) : 'NGN';
 		$button_text  = isset( $_POST['button_text'] ) ? sanitize_text_field( wp_unslash( $_POST['button_text'] ) ) : '';
+		$footer_text  = isset( $_POST['footer_text'] ) ? sanitize_text_field( wp_unslash( $_POST['footer_text'] ) ) : '';
 		$fixed_amount = isset( $_POST['fixed_amount'] ) ? 'yes' : 'no';
+		$width        = isset( $_POST['width'] ) ? $this->sanitize_width( wp_unslash( $_POST['width'] ) ) : 'wide';
 
 		update_option(
 			self::BUILDER_OPTION_NAME,
 			array(
 				'title'        => '' !== $title ? $title : 'Pay with Sauki Pay',
+				'description'  => $description,
 				'amount'       => $amount > 0 ? (string) $amount : '',
 				'currency'     => '' !== $currency ? $currency : 'NGN',
 				'button_text'  => '' !== $button_text ? $button_text : 'Pay with Sauki Pay',
+				'footer_text'  => $footer_text,
 				'fixed_amount' => $fixed_amount,
+				'width'        => $width,
 			),
 			false
 		);
@@ -260,34 +282,56 @@ class SaukiPay_Payment_Form {
 			<?php if ( isset( $_GET['updated'] ) ) : ?>
 				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Payment form settings saved.', 'saukipay' ); ?></p></div>
 			<?php endif; ?>
-			<div style="display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:24px;align-items:start;max-width:1180px;">
-				<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="background:#fff;border:1px solid #dcdcde;border-radius:8px;padding:20px;">
+			<div class="saukipay-builder-layout">
+				<form class="saukipay-builder-card" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 					<input type="hidden" name="action" value="saukipay_save_form_builder">
 					<?php wp_nonce_field( 'saukipay_save_form_builder' ); ?>
-					<table class="form-table" role="presentation">
-						<tbody>
-							<tr>
-								<th scope="row"><label for="saukipay_form_title"><?php esc_html_e( 'Form title', 'saukipay' ); ?></label></th>
-								<td><input class="regular-text" id="saukipay_form_title" type="text" name="title" value="<?php echo esc_attr( $form['title'] ); ?>"></td>
-							</tr>
-							<tr>
-								<th scope="row"><label for="saukipay_form_amount"><?php esc_html_e( 'Amount', 'saukipay' ); ?></label></th>
-								<td><input class="regular-text" id="saukipay_form_amount" type="number" min="0" step="0.01" name="amount" value="<?php echo esc_attr( $form['amount'] ); ?>"></td>
-							</tr>
-							<tr>
-								<th scope="row"><label for="saukipay_form_currency"><?php esc_html_e( 'Currency', 'saukipay' ); ?></label></th>
-								<td><input class="regular-text" id="saukipay_form_currency" type="text" maxlength="3" name="currency" value="<?php echo esc_attr( $form['currency'] ); ?>"></td>
-							</tr>
-							<tr>
-								<th scope="row"><label for="saukipay_form_button"><?php esc_html_e( 'Button text', 'saukipay' ); ?></label></th>
-								<td><input class="regular-text" id="saukipay_form_button" type="text" name="button_text" value="<?php echo esc_attr( $form['button_text'] ); ?>"></td>
-							</tr>
-							<tr>
-								<th scope="row"><?php esc_html_e( 'Fixed amount', 'saukipay' ); ?></th>
-								<td><label><input type="checkbox" name="fixed_amount" value="yes" <?php checked( $form['fixed_amount'], 'yes' ); ?>> <?php esc_html_e( 'Customers cannot edit the amount', 'saukipay' ); ?></label></td>
-							</tr>
-						</tbody>
-					</table>
+					<h2><?php esc_html_e( 'Form Content', 'saukipay' ); ?></h2>
+					<div class="saukipay-builder-grid">
+						<label>
+							<span><?php esc_html_e( 'Form title', 'saukipay' ); ?></span>
+							<input id="saukipay_form_title" type="text" name="title" value="<?php echo esc_attr( $form['title'] ); ?>">
+						</label>
+						<label>
+							<span><?php esc_html_e( 'Description', 'saukipay' ); ?></span>
+							<input id="saukipay_form_description" type="text" name="description" value="<?php echo esc_attr( $form['description'] ); ?>" placeholder="<?php esc_attr_e( 'Support our work with a secure donation.', 'saukipay' ); ?>">
+						</label>
+						<label>
+							<span><?php esc_html_e( 'Button text', 'saukipay' ); ?></span>
+							<input id="saukipay_form_button" type="text" name="button_text" value="<?php echo esc_attr( $form['button_text'] ); ?>">
+						</label>
+						<label>
+							<span><?php esc_html_e( 'Footer note', 'saukipay' ); ?></span>
+							<input id="saukipay_form_footer" type="text" name="footer_text" value="<?php echo esc_attr( $form['footer_text'] ); ?>">
+						</label>
+					</div>
+					<h2><?php esc_html_e( 'Payment Settings', 'saukipay' ); ?></h2>
+					<div class="saukipay-builder-grid">
+						<label>
+							<span><?php esc_html_e( 'Amount', 'saukipay' ); ?></span>
+							<input id="saukipay_form_amount" type="number" min="0" step="0.01" name="amount" value="<?php echo esc_attr( $form['amount'] ); ?>" placeholder="5000">
+						</label>
+						<label>
+							<span><?php esc_html_e( 'Currency', 'saukipay' ); ?></span>
+							<select id="saukipay_form_currency" name="currency">
+								<?php foreach ( $this->supported_currencies() as $code => $label ) : ?>
+									<option value="<?php echo esc_attr( $code ); ?>" <?php selected( $form['currency'], $code ); ?>><?php echo esc_html( $label ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</label>
+						<label>
+							<span><?php esc_html_e( 'Form width', 'saukipay' ); ?></span>
+							<select id="saukipay_form_width" name="width">
+								<option value="compact" <?php selected( $form['width'], 'compact' ); ?>><?php esc_html_e( 'Compact', 'saukipay' ); ?></option>
+								<option value="wide" <?php selected( $form['width'], 'wide' ); ?>><?php esc_html_e( 'Wide', 'saukipay' ); ?></option>
+								<option value="full" <?php selected( $form['width'], 'full' ); ?>><?php esc_html_e( 'Full width', 'saukipay' ); ?></option>
+							</select>
+						</label>
+						<label class="saukipay-builder-check">
+							<input type="checkbox" name="fixed_amount" value="yes" <?php checked( $form['fixed_amount'], 'yes' ); ?>>
+							<span><?php esc_html_e( 'Customers cannot edit the amount', 'saukipay' ); ?></span>
+						</label>
+					</div>
 					<?php submit_button( __( 'Save Form', 'saukipay' ) ); ?>
 				</form>
 				<div style="display:grid;gap:18px;">
@@ -316,7 +360,7 @@ class SaukiPay_Payment_Form {
 		$amount   = '' !== $form['amount'] ? (float) $form['amount'] : 0;
 		$currency = sanitize_text_field( strtoupper( $form['currency'] ) );
 		?>
-		<div class="saukipay-form-shell saukipay-form-preview">
+		<div class="saukipay-form-shell saukipay-form-preview saukipay-form-width-<?php echo esc_attr( $this->sanitize_width( $form['width'] ) ); ?>">
 			<div class="saukipay-form-brand">
 				<div class="saukipay-form-brand-main">
 					<span class="saukipay-form-icon"><img src="<?php echo esc_url( SAUKIPAY_URL . 'assets/images/saukipay-icon.png' ); ?>" alt=""></span>
@@ -326,7 +370,12 @@ class SaukiPay_Payment_Form {
 			</div>
 			<div class="saukipay-form">
 				<div class="saukipay-form-heading">
-					<h3><?php echo esc_html( $form['title'] ); ?></h3>
+					<div>
+						<h3><?php echo esc_html( $form['title'] ); ?></h3>
+						<?php if ( '' !== trim( (string) $form['description'] ) ) : ?>
+							<p><?php echo esc_html( $form['description'] ); ?></p>
+						<?php endif; ?>
+					</div>
 					<?php if ( $amount > 0 ) : ?>
 						<strong><?php echo esc_html( $currency . ' ' . number_format_i18n( $amount, 2 ) ); ?></strong>
 					<?php endif; ?>
@@ -336,6 +385,9 @@ class SaukiPay_Payment_Form {
 				<label><span><?php esc_html_e( 'Phone number', 'saukipay' ); ?></span><input type="tel" disabled value="08012345678"></label>
 				<label><span><?php esc_html_e( 'Amount', 'saukipay' ); ?></span><input type="number" disabled value="<?php echo esc_attr( $amount > 0 ? $amount : '5000' ); ?>"></label>
 				<button type="button" disabled><span><?php echo esc_html( $form['button_text'] ); ?></span><span aria-hidden="true">→</span></button>
+				<?php if ( '' !== trim( (string) $form['footer_text'] ) ) : ?>
+					<p class="saukipay-form-footer"><?php echo esc_html( $form['footer_text'] ); ?></p>
+				<?php endif; ?>
 			</div>
 		</div>
 		<?php
@@ -353,13 +405,63 @@ class SaukiPay_Payment_Form {
 			'currency="' . esc_attr( $form['currency'] ) . '"',
 			'button_text="' . esc_attr( $form['button_text'] ) . '"',
 			'fixed_amount="' . esc_attr( $form['fixed_amount'] ) . '"',
+			'width="' . esc_attr( $form['width'] ) . '"',
 		);
+
+		if ( '' !== $form['description'] ) {
+			$parts[] = 'description="' . esc_attr( $form['description'] ) . '"';
+		}
+
+		if ( '' !== $form['footer_text'] ) {
+			$parts[] = 'footer_text="' . esc_attr( $form['footer_text'] ) . '"';
+		}
 
 		if ( '' !== $form['amount'] ) {
 			$parts[] = 'amount="' . esc_attr( $form['amount'] ) . '"';
 		}
 
 		return '[saukipay_payment_form ' . implode( ' ', $parts ) . ']';
+	}
+
+	/**
+	 * Supported currencies for the form builder.
+	 *
+	 * @return array
+	 */
+	private function supported_currencies() {
+		return array(
+			'NGN' => __( 'NGN - Nigerian Naira', 'saukipay' ),
+			'USD' => __( 'USD - US Dollar', 'saukipay' ),
+			'GBP' => __( 'GBP - British Pound', 'saukipay' ),
+			'EUR' => __( 'EUR - Euro', 'saukipay' ),
+			'GHS' => __( 'GHS - Ghanaian Cedi', 'saukipay' ),
+			'KES' => __( 'KES - Kenyan Shilling', 'saukipay' ),
+			'ZAR' => __( 'ZAR - South African Rand', 'saukipay' ),
+		);
+	}
+
+	/**
+	 * Sanitize currency code.
+	 *
+	 * @param string $currency Currency code.
+	 * @return string
+	 */
+	private function sanitize_currency( $currency ) {
+		$currency = strtoupper( sanitize_text_field( $currency ) );
+		$allowed  = array_keys( $this->supported_currencies() );
+
+		return in_array( $currency, $allowed, true ) ? $currency : 'NGN';
+	}
+
+	/**
+	 * Sanitize form width.
+	 *
+	 * @param string $width Width option.
+	 * @return string
+	 */
+	private function sanitize_width( $width ) {
+		$width = sanitize_key( $width );
+		return in_array( $width, array( 'compact', 'wide', 'full' ), true ) ? $width : 'wide';
 	}
 
 	/**
@@ -381,9 +483,10 @@ class SaukiPay_Payment_Form {
 		$phone     = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
 		$currency  = isset( $_POST['currency'] ) ? sanitize_text_field( strtoupper( wp_unslash( $_POST['currency'] ) ) ) : 'NGN';
 		$amount    = isset( $_POST['amount'] ) ? (float) wp_unslash( $_POST['amount'] ) : 0;
+		$return_url = isset( $_POST['return_url'] ) ? esc_url_raw( wp_unslash( $_POST['return_url'] ) ) : home_url( '/' );
 
 		if ( '' === $full_name || ! is_email( $email ) || '' === $phone || $amount <= 0 ) {
-			wp_die( esc_html__( 'Please provide valid payment details.', 'saukipay' ), 400 );
+			$this->payment_error( __( 'Please provide valid payment details.', 'saukipay' ), array(), $return_url, 400 );
 		}
 
 		$reference = $this->create_reference();
@@ -407,14 +510,14 @@ class SaukiPay_Payment_Form {
 
 		if ( is_wp_error( $response ) ) {
 			$this->api->log_debug( 'Shortcode payment initialization failed.', array( 'error' => $response->get_error_message() ) );
-			wp_die( esc_html__( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), 500 );
+			$this->payment_error( __( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), array( 'error' => $response->get_error_message(), 'error_code' => $response->get_error_code(), 'error_data' => $response->get_error_data() ), $return_url );
 		}
 
 		$checkout_url = $this->api->get_checkout_url( $response );
 
 		if ( '' === $checkout_url ) {
 			$this->api->log_debug( 'Shortcode payment initialization response missing checkout URL.', $response );
-			wp_die( esc_html__( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), 500 );
+			$this->payment_error( __( 'Unable to initialize Sauki Pay payment. Please try again.', 'saukipay' ), array( 'reason' => 'Checkout URL missing from Sauki Pay response.', 'response' => $response ), $return_url );
 		}
 
 		update_option(
@@ -441,6 +544,68 @@ class SaukiPay_Payment_Form {
 	}
 
 	/**
+	 * Stop payment flow with admin-only diagnostics.
+	 *
+	 * @param string $message Public message.
+	 * @param array  $debug Debug context.
+	 * @param string $return_url URL to redirect back to.
+	 * @param int    $status_code HTTP status code.
+	 * @return void
+	 */
+	private function payment_error( $message, array $debug = array(), $return_url = '', $status_code = 500 ) {
+		if ( '' !== $return_url ) {
+			$args = array(
+				'saukipay_result'  => 'failed',
+				'saukipay_message' => rawurlencode( $message ),
+			);
+
+			if ( current_user_can( 'manage_options' ) && ! empty( $debug ) ) {
+				set_transient( 'saukipay_debug_' . get_current_user_id(), $this->redact_debug_data( $debug ), 10 * MINUTE_IN_SECONDS );
+				$args['saukipay_debug'] = '1';
+			}
+
+			wp_safe_redirect( add_query_arg( $args, $return_url ) );
+			exit;
+		}
+
+		$display = esc_html( $message );
+
+		if ( current_user_can( 'manage_options' ) && ! empty( $debug ) ) {
+			$display .= '<hr><p><strong>' . esc_html__( 'Sauki Pay debug details', 'saukipay' ) . '</strong></p>';
+			$display .= '<pre style="white-space:pre-wrap;text-align:left;">' . esc_html( wp_json_encode( $this->redact_debug_data( $debug ), JSON_PRETTY_PRINT ) ) . '</pre>';
+		}
+
+		wp_die( $display, esc_html__( 'Sauki Pay payment error', 'saukipay' ), array( 'response' => $status_code ) );
+	}
+
+	/**
+	 * Redact sensitive data before displaying diagnostics.
+	 *
+	 * @param mixed $value Value to redact.
+	 * @return mixed
+	 */
+	private function redact_debug_data( $value ) {
+		if ( ! is_array( $value ) ) {
+			return $value;
+		}
+
+		$redacted = array();
+
+		foreach ( $value as $key => $item ) {
+			$normalized_key = strtolower( (string) $key );
+
+			if ( false !== strpos( $normalized_key, 'secret' ) || false !== strpos( $normalized_key, 'authorization' ) || false !== strpos( $normalized_key, 'token' ) ) {
+				$redacted[ $key ] = '[redacted]';
+				continue;
+			}
+
+			$redacted[ $key ] = is_array( $item ) ? $this->redact_debug_data( $item ) : $item;
+		}
+
+		return $redacted;
+	}
+
+	/**
 	 * Create unique payment reference.
 	 *
 	 * @return string
@@ -464,5 +629,32 @@ class SaukiPay_Payment_Form {
 		$class   = 'success' === $status ? 'saukipay-result saukipay-result-success' : 'saukipay-result saukipay-result-failed';
 
 		printf( '<div class="%1$s">%2$s</div>', esc_attr( $class ), esc_html( $message ) );
+
+		if ( current_user_can( 'manage_options' ) && ! empty( $_GET['saukipay_debug'] ) ) {
+			$debug = get_transient( 'saukipay_debug_' . get_current_user_id() );
+
+			if ( ! empty( $debug ) ) {
+				printf(
+					'<details class="saukipay-debug"><summary>%1$s</summary><pre>%2$s</pre></details>',
+					esc_html__( 'Sauki Pay debug details', 'saukipay' ),
+					esc_html( wp_json_encode( $debug, JSON_PRETTY_PRINT ) )
+				);
+				delete_transient( 'saukipay_debug_' . get_current_user_id() );
+			}
+		}
+	}
+
+	/**
+	 * Get current frontend URL.
+	 *
+	 * @return string
+	 */
+	private function current_url() {
+		global $wp;
+
+		$path = isset( $wp->request ) ? $wp->request : '';
+		$url  = home_url( add_query_arg( array(), $path ) );
+
+		return remove_query_arg( array( 'saukipay_result', 'saukipay_message', 'saukipay_debug' ), $url );
 	}
 }

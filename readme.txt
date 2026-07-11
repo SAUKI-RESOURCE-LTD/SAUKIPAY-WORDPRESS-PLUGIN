@@ -4,7 +4,7 @@ Tags: payments, woocommerce, gateway, shortcode
 Requires at least: 5.8
 Tested up to: 6.6
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -41,8 +41,11 @@ Supported attributes:
 * `amount` - Optional amount.
 * `currency` - Currency code, defaults to NGN.
 * `title` - Form title.
+* `description` - Optional text shown below the form title.
 * `button_text` - Submit button text.
+* `footer_text` - Optional note shown below the payment button.
 * `fixed_amount` - Use `yes` to prevent amount editing.
+* `width` - Form width. Supported values: compact, wide, full.
 
 Example:
 
@@ -79,6 +82,12 @@ This plugin does not collect payment data for advertising or tracking. Customer 
 The plugin code is licensed under GPLv2 or later. Included Sauki Pay brand assets are distributed with this plugin under GPLv2 or later, subject to Sauki Pay trademark rights.
 
 == Changelog ==
+
+= 1.0.2 =
+Improve the payment form builder with currency dropdown, description/footer controls, width options, and a wider default form layout.
+
+= 1.0.1 =
+Fix shortcode payment initialization for nested Sauki Pay API responses and improve visible error handling.
 
 = 1.0.0 =
 Initial release.

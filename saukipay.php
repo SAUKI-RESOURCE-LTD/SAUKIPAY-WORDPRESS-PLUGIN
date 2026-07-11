@@ -3,7 +3,7 @@
  * Plugin Name: Sauki Pay
  * Plugin URI: https://saukipay.net
  * Description: Accept payments with Sauki Pay through WooCommerce and a standalone shortcode payment form.
- * Version: 1.0.0
+ * Version: 1.0.2
  * Author: Sauki Pay
  * Author URI: https://saukipay.net
  * Text Domain: saukipay
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SAUKIPAY_VERSION', '1.0.0' );
+define( 'SAUKIPAY_VERSION', '1.0.2' );
 define( 'SAUKIPAY_FILE', __FILE__ );
 define( 'SAUKIPAY_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SAUKIPAY_URL', plugin_dir_url( __FILE__ ) );
