@@ -30,7 +30,7 @@ You can download the Sauki Pay WordPress plugin from the official GitHub release
 
 Direct plugin ZIP download:
 
-`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.1.6/saukipay-wordpress-plugin.zip`
+`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.1.6/saukipay-wordpress-plugin-v1.1.6.zip`
 
 Download the ZIP file before installing the plugin in WordPress.
 

@@ -6,7 +6,7 @@ This release expands the Sauki Pay WordPress plugin beyond WooCommerce and the s
 
 Download the plugin ZIP:
 
-https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.1.6/saukipay-wordpress-plugin.zip
+https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.1.6/saukipay-wordpress-plugin-v1.1.6.zip
 
 ## What's New
 
@@ -28,7 +28,7 @@ https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/downloa
 
 ## Installation
 
-1. Download `saukipay-wordpress-plugin.zip`.
+1. Download `saukipay-wordpress-plugin-v1.1.6.zip`.
 2. Log in to WordPress admin.
 3. Go to Plugins > Add New > Upload Plugin.
 4. Upload the ZIP file.
