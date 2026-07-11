@@ -9,6 +9,18 @@
 	overflow: hidden;
 }
 
+.saukipay-form .screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
 .saukipay-form-width-compact {
 	max-width: 480px;
 }
@@ -162,6 +174,73 @@
 	background: #edf3f5;
 }
 
+.saukipay-amount-picker {
+	display: grid;
+	gap: 12px;
+}
+
+.saukipay-amount-picker-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	color: #102f3a;
+	font-size: 0.92rem;
+	font-weight: 800;
+	text-transform: capitalize;
+}
+
+.saukipay-amount-picker-head em {
+	display: inline-flex;
+	align-items: center;
+	min-height: 28px;
+	padding: 3px 10px;
+	border-radius: 8px;
+	background: #edf3f5;
+	color: rgba(16, 47, 58, 0.78);
+	font-style: normal;
+	font-weight: 900;
+}
+
+.saukipay-amount-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.saukipay-form .saukipay-amount-option {
+	min-height: 54px;
+	margin: 0;
+	border: 1px solid rgba(16, 47, 58, 0.28);
+	border-radius: 12px;
+	padding: 10px 12px;
+	background: #ffffff;
+	color: #102f3a;
+	box-shadow: none;
+	font-size: 0.95rem;
+	line-height: 1.2;
+}
+
+.saukipay-form .saukipay-amount-option:hover,
+.saukipay-form .saukipay-amount-option:focus {
+	background: #fff8ea;
+	border-color: #f6a81a;
+	box-shadow: 0 0 0 4px rgba(246, 168, 26, 0.16);
+	transform: none;
+}
+
+.saukipay-form .saukipay-amount-option.is-selected {
+	border-color: #102f3a;
+	background: #102f3a;
+	color: #ffffff;
+	box-shadow: 0 12px 26px rgba(16, 47, 58, 0.18);
+}
+
+.saukipay-custom-amount input {
+	text-align: center;
+	font-weight: 800;
+}
+
 .saukipay-form button {
 	display: inline-flex;
 	align-items: center;
@@ -261,6 +340,15 @@
 	min-height: 42px;
 }
 
+.saukipay-form-preview .saukipay-amount-grid {
+	gap: 8px;
+}
+
+.saukipay-form-preview .saukipay-form .saukipay-amount-option {
+	min-height: 42px;
+	font-size: 0.82rem;
+}
+
 .saukipay-form-preview .saukipay-form button {
 	min-height: 44px;
 	box-shadow: none;
@@ -326,6 +414,70 @@
 	margin: 0;
 }
 
+.saukipay-givewp-panel {
+	display: grid;
+	gap: 16px;
+}
+
+.saukipay-givewp-brand {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 16px;
+	border-radius: 12px;
+	background: #102f3a;
+	color: #ffffff;
+}
+
+.saukipay-givewp-icon {
+	display: inline-grid;
+	place-items: center;
+	flex: 0 0 auto;
+	width: 42px;
+	height: 42px;
+	border-radius: 12px;
+	background: #ffffff;
+	box-shadow: inset 0 0 0 1px rgba(16, 47, 58, 0.08);
+}
+
+.saukipay-givewp-icon img {
+	display: block;
+	width: 30px;
+	height: auto;
+}
+
+.saukipay-givewp-wordmark {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 3px;
+	color: #ffffff;
+	font-size: 1.08rem;
+	font-weight: 900;
+	line-height: 1;
+}
+
+.saukipay-givewp-wordmark strong {
+	color: #f6a81a;
+	font: inherit;
+}
+
+.saukipay-givewp-secure {
+	margin-left: auto;
+	color: #f6a81a;
+	font-size: 0.74rem;
+	font-style: normal;
+	font-weight: 900;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.saukipay-givewp-message {
+	margin: 0;
+	color: #405463;
+	font-weight: 700;
+	line-height: 1.5;
+}
+
 @media (max-width: 1180px) {
 	.saukipay-builder-layout {
 		grid-template-columns: 1fr;
@@ -351,5 +503,18 @@
 
 	.saukipay-form {
 		padding: 18px;
+	}
+
+	.saukipay-amount-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.saukipay-givewp-brand {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.saukipay-givewp-secure {
+		margin-left: 0;
 	}
 }

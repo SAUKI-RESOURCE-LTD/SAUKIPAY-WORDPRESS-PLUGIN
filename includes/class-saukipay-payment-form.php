@@ -97,6 +97,8 @@ class SaukiPay_Payment_Form {
 				'button_text'  => $form_settings['button_text'],
 				'footer_text'  => $form_settings['footer_text'],
 				'fixed_amount' => $form_settings['fixed_amount'],
+				'preset_amounts' => $form_settings['preset_amounts'],
+				'allow_custom_amount' => $form_settings['allow_custom_amount'],
 				'width'        => $form_settings['width'],
 			),
 			$atts,
@@ -110,6 +112,9 @@ class SaukiPay_Payment_Form {
 		$amount       = '' !== $atts['amount'] ? (float) $atts['amount'] : 0;
 		$currency     = sanitize_text_field( strtoupper( $atts['currency'] ) );
 		$width        = $this->sanitize_width( $atts['width'] );
+		$preset_amounts = $this->sanitize_preset_amounts( $atts['preset_amounts'] );
+		$allow_custom_amount = filter_var( $atts['allow_custom_amount'], FILTER_VALIDATE_BOOLEAN );
+		$default_amount = $amount > 0 ? $amount : $this->first_preset_amount( $preset_amounts );
 
 		ob_start();
 		$this->render_result_notice();
@@ -130,9 +135,9 @@ class SaukiPay_Payment_Form {
 							<p><?php echo esc_html( $atts['description'] ); ?></p>
 						<?php endif; ?>
 					</div>
-					<?php if ( $amount > 0 ) : ?>
-						<strong><?php echo esc_html( $currency . ' ' . number_format_i18n( $amount, 2 ) ); ?></strong>
-					<?php endif; ?>
+				<?php if ( $default_amount > 0 ) : ?>
+					<strong><?php echo esc_html( $currency . ' ' . number_format_i18n( $default_amount, 2 ) ); ?></strong>
+				<?php endif; ?>
 				</div>
 				<input type="hidden" name="action" value="saukipay_form_pay">
 				<input type="hidden" name="currency" value="<?php echo esc_attr( $currency ); ?>">
@@ -152,13 +157,7 @@ class SaukiPay_Payment_Form {
 					<span><?php esc_html_e( 'Phone number', 'saukipay' ); ?></span>
 					<input type="tel" name="phone" required maxlength="30" autocomplete="tel" placeholder="<?php esc_attr_e( '08012345678', 'saukipay' ); ?>">
 				</label>
-				<label>
-					<span><?php esc_html_e( 'Amount', 'saukipay' ); ?></span>
-					<input type="number" name="amount" min="1" step="0.01" required value="<?php echo esc_attr( $amount > 0 ? $amount : '' ); ?>" <?php disabled( $fixed_amount ); ?>>
-					<?php if ( $fixed_amount ) : ?>
-						<input type="hidden" name="amount" value="<?php echo esc_attr( $amount ); ?>">
-					<?php endif; ?>
-				</label>
+				<?php $this->render_amount_control( $currency, $amount, $preset_amounts, $allow_custom_amount, $fixed_amount ); ?>
 				<button type="submit">
 					<span><?php echo esc_html( $atts['button_text'] ); ?></span>
 					<span aria-hidden="true">→</span>
@@ -202,6 +201,8 @@ class SaukiPay_Payment_Form {
 			'button_text'  => $this->settings->get( 'button_text', 'Pay with Sauki Pay' ),
 			'footer_text'  => 'You will be redirected to Sauki Pay secure checkout.',
 			'fixed_amount' => 'no',
+			'preset_amounts' => '1000,10000,50000,100000,250000,500000',
+			'allow_custom_amount' => 'yes',
 			'width'        => 'wide',
 		);
 	}
@@ -235,6 +236,8 @@ class SaukiPay_Payment_Form {
 		$button_text  = isset( $_POST['button_text'] ) ? sanitize_text_field( wp_unslash( $_POST['button_text'] ) ) : '';
 		$footer_text  = isset( $_POST['footer_text'] ) ? sanitize_text_field( wp_unslash( $_POST['footer_text'] ) ) : '';
 		$fixed_amount = isset( $_POST['fixed_amount'] ) ? 'yes' : 'no';
+		$preset_amounts = isset( $_POST['preset_amounts'] ) ? $this->preset_amounts_to_string( $this->sanitize_preset_amounts( wp_unslash( $_POST['preset_amounts'] ) ) ) : '';
+		$allow_custom_amount = isset( $_POST['allow_custom_amount'] ) ? 'yes' : 'no';
 		$width        = isset( $_POST['width'] ) ? $this->sanitize_width( wp_unslash( $_POST['width'] ) ) : 'wide';
 
 		update_option(
@@ -247,6 +250,8 @@ class SaukiPay_Payment_Form {
 				'button_text'  => '' !== $button_text ? $button_text : 'Pay with Sauki Pay',
 				'footer_text'  => $footer_text,
 				'fixed_amount' => $fixed_amount,
+				'preset_amounts' => $preset_amounts,
+				'allow_custom_amount' => $allow_custom_amount,
 				'width'        => $width,
 			),
 			false
@@ -312,6 +317,11 @@ class SaukiPay_Payment_Form {
 							<input id="saukipay_form_amount" type="number" min="0" step="0.01" name="amount" value="<?php echo esc_attr( $form['amount'] ); ?>" placeholder="5000">
 						</label>
 						<label>
+							<span><?php esc_html_e( 'Preset amounts', 'saukipay' ); ?></span>
+							<input id="saukipay_form_presets" type="text" name="preset_amounts" value="<?php echo esc_attr( $form['preset_amounts'] ); ?>" placeholder="1000,10000,50000">
+							<small><?php esc_html_e( 'Separate each amount with a comma. These show as quick-select buttons.', 'saukipay' ); ?></small>
+						</label>
+						<label>
 							<span><?php esc_html_e( 'Currency', 'saukipay' ); ?></span>
 							<select id="saukipay_form_currency" name="currency">
 								<?php foreach ( $this->supported_currencies() as $code => $label ) : ?>
@@ -330,6 +340,10 @@ class SaukiPay_Payment_Form {
 						<label class="saukipay-builder-check">
 							<input type="checkbox" name="fixed_amount" value="yes" <?php checked( $form['fixed_amount'], 'yes' ); ?>>
 							<span><?php esc_html_e( 'Customers cannot edit the amount', 'saukipay' ); ?></span>
+						</label>
+						<label class="saukipay-builder-check">
+							<input type="checkbox" name="allow_custom_amount" value="yes" <?php checked( $form['allow_custom_amount'], 'yes' ); ?>>
+							<span><?php esc_html_e( 'Allow customers to enter a custom amount', 'saukipay' ); ?></span>
 						</label>
 					</div>
 					<?php submit_button( __( 'Save Form', 'saukipay' ) ); ?>
@@ -359,6 +373,8 @@ class SaukiPay_Payment_Form {
 	private function render_admin_preview( array $form ) {
 		$amount   = '' !== $form['amount'] ? (float) $form['amount'] : 0;
 		$currency = sanitize_text_field( strtoupper( $form['currency'] ) );
+		$preset_amounts = $this->sanitize_preset_amounts( $form['preset_amounts'] );
+		$allow_custom_amount = filter_var( $form['allow_custom_amount'], FILTER_VALIDATE_BOOLEAN );
 		?>
 		<div class="saukipay-form-shell saukipay-form-preview saukipay-form-width-<?php echo esc_attr( $this->sanitize_width( $form['width'] ) ); ?>">
 			<div class="saukipay-form-brand">
@@ -376,14 +392,14 @@ class SaukiPay_Payment_Form {
 							<p><?php echo esc_html( $form['description'] ); ?></p>
 						<?php endif; ?>
 					</div>
-					<?php if ( $amount > 0 ) : ?>
-						<strong><?php echo esc_html( $currency . ' ' . number_format_i18n( $amount, 2 ) ); ?></strong>
+					<?php if ( $amount > 0 || ! empty( $preset_amounts ) ) : ?>
+						<strong><?php echo esc_html( $currency . ' ' . number_format_i18n( $amount > 0 ? $amount : $this->first_preset_amount( $preset_amounts ), 2 ) ); ?></strong>
 					<?php endif; ?>
 				</div>
 				<label><span><?php esc_html_e( 'Full name', 'saukipay' ); ?></span><input type="text" disabled value="Ada Lovelace"></label>
 				<label><span><?php esc_html_e( 'Email address', 'saukipay' ); ?></span><input type="email" disabled value="customer@example.com"></label>
 				<label><span><?php esc_html_e( 'Phone number', 'saukipay' ); ?></span><input type="tel" disabled value="08012345678"></label>
-				<label><span><?php esc_html_e( 'Amount', 'saukipay' ); ?></span><input type="number" disabled value="<?php echo esc_attr( $amount > 0 ? $amount : '5000' ); ?>"></label>
+				<?php $this->render_amount_control( $currency, $amount, $preset_amounts, $allow_custom_amount, 'yes' === $form['fixed_amount'], true ); ?>
 				<button type="button" disabled><span><?php echo esc_html( $form['button_text'] ); ?></span><span aria-hidden="true">→</span></button>
 				<?php if ( '' !== trim( (string) $form['footer_text'] ) ) : ?>
 					<p class="saukipay-form-footer"><?php echo esc_html( $form['footer_text'] ); ?></p>
@@ -405,6 +421,8 @@ class SaukiPay_Payment_Form {
 			'currency="' . esc_attr( $form['currency'] ) . '"',
 			'button_text="' . esc_attr( $form['button_text'] ) . '"',
 			'fixed_amount="' . esc_attr( $form['fixed_amount'] ) . '"',
+			'preset_amounts="' . esc_attr( $form['preset_amounts'] ) . '"',
+			'allow_custom_amount="' . esc_attr( $form['allow_custom_amount'] ) . '"',
 			'width="' . esc_attr( $form['width'] ) . '"',
 		);
 
@@ -424,6 +442,65 @@ class SaukiPay_Payment_Form {
 	}
 
 	/**
+	 * Render frontend/admin amount controls.
+	 *
+	 * @param string $currency Currency code.
+	 * @param float  $amount Base amount.
+	 * @param array  $preset_amounts Preset amounts.
+	 * @param bool   $allow_custom_amount Whether custom amount input is shown.
+	 * @param bool   $fixed_amount Whether amount is locked.
+	 * @param bool   $preview Whether this is an admin preview.
+	 * @return void
+	 */
+	private function render_amount_control( $currency, $amount, array $preset_amounts, $allow_custom_amount, $fixed_amount, $preview = false ) {
+		$default_amount = $amount > 0 ? $amount : $this->first_preset_amount( $preset_amounts );
+
+		if ( $fixed_amount ) {
+			?>
+			<label>
+				<span><?php esc_html_e( 'Amount', 'saukipay' ); ?></span>
+				<input type="number" name="amount" min="1" step="0.01" required value="<?php echo esc_attr( $default_amount > 0 ? $default_amount : '' ); ?>" <?php disabled( true ); ?>>
+				<input type="hidden" name="amount" value="<?php echo esc_attr( $default_amount ); ?>">
+			</label>
+			<?php
+			return;
+		}
+
+		if ( empty( $preset_amounts ) ) {
+			?>
+			<label>
+				<span><?php esc_html_e( 'Amount', 'saukipay' ); ?></span>
+				<input type="number" name="amount" min="1" step="0.01" required value="<?php echo esc_attr( $default_amount > 0 ? $default_amount : '' ); ?>">
+			</label>
+			<?php
+			return;
+		}
+
+		?>
+		<div class="saukipay-amount-picker" data-currency="<?php echo esc_attr( $currency ); ?>">
+			<div class="saukipay-amount-picker-head">
+				<span><?php esc_html_e( 'Donation amount', 'saukipay' ); ?></span>
+				<em><?php echo esc_html( $currency ); ?></em>
+			</div>
+			<input type="hidden" name="amount" value="<?php echo esc_attr( $default_amount ); ?>" <?php disabled( $preview ); ?>>
+			<div class="saukipay-amount-grid">
+				<?php foreach ( $preset_amounts as $index => $preset_amount ) : ?>
+					<button type="button" class="saukipay-amount-option <?php echo 0 === $index && $default_amount === $preset_amount ? 'is-selected' : ''; ?>" data-amount="<?php echo esc_attr( $preset_amount ); ?>" <?php disabled( $preview ); ?>>
+						<?php echo esc_html( $currency . ' ' . number_format_i18n( $preset_amount, 2 ) ); ?>
+					</button>
+				<?php endforeach; ?>
+			</div>
+			<?php if ( $allow_custom_amount ) : ?>
+				<label class="saukipay-custom-amount">
+					<span class="screen-reader-text"><?php esc_html_e( 'Custom amount', 'saukipay' ); ?></span>
+					<input type="number" name="custom_amount" min="1" step="0.01" placeholder="<?php esc_attr_e( 'Enter custom amount', 'saukipay' ); ?>" <?php disabled( $preview ); ?>>
+				</label>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
+
+	/**
 	 * Supported currencies for the form builder.
 	 *
 	 * @return array
@@ -438,6 +515,60 @@ class SaukiPay_Payment_Form {
 			'KES' => __( 'KES - Kenyan Shilling', 'saukipay' ),
 			'ZAR' => __( 'ZAR - South African Rand', 'saukipay' ),
 		);
+	}
+
+	/**
+	 * Sanitize preset amount list.
+	 *
+	 * @param string|array $amounts Amount list.
+	 * @return array
+	 */
+	private function sanitize_preset_amounts( $amounts ) {
+		if ( is_array( $amounts ) ) {
+			$items = $amounts;
+		} else {
+			$items = preg_split( '/[\s,]+/', (string) $amounts );
+		}
+
+		$clean = array();
+
+		foreach ( $items as $item ) {
+			$value = (float) preg_replace( '/[^0-9.]/', '', (string) $item );
+
+			if ( $value > 0 ) {
+				$clean[] = $value;
+			}
+		}
+
+		$clean = array_values( array_unique( $clean ) );
+
+		return array_slice( $clean, 0, 12 );
+	}
+
+	/**
+	 * Convert preset amounts to storage/shortcode string.
+	 *
+	 * @param array $amounts Preset amounts.
+	 * @return string
+	 */
+	private function preset_amounts_to_string( array $amounts ) {
+		$items = array();
+
+		foreach ( $amounts as $amount ) {
+			$items[] = rtrim( rtrim( number_format( (float) $amount, 2, '.', '' ), '0' ), '.' );
+		}
+
+		return implode( ',', $items );
+	}
+
+	/**
+	 * Get the first preset amount.
+	 *
+	 * @param array $amounts Preset amounts.
+	 * @return float
+	 */
+	private function first_preset_amount( array $amounts ) {
+		return ! empty( $amounts ) ? (float) reset( $amounts ) : 0;
 	}
 
 	/**
@@ -483,7 +614,12 @@ class SaukiPay_Payment_Form {
 		$phone     = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
 		$currency  = isset( $_POST['currency'] ) ? sanitize_text_field( strtoupper( wp_unslash( $_POST['currency'] ) ) ) : 'NGN';
 		$amount    = isset( $_POST['amount'] ) ? (float) wp_unslash( $_POST['amount'] ) : 0;
+		$custom_amount = isset( $_POST['custom_amount'] ) ? (float) wp_unslash( $_POST['custom_amount'] ) : 0;
 		$return_url = isset( $_POST['return_url'] ) ? esc_url_raw( wp_unslash( $_POST['return_url'] ) ) : home_url( '/' );
+
+		if ( $custom_amount > 0 ) {
+			$amount = $custom_amount;
+		}
 
 		if ( '' === $full_name || ! is_email( $email ) || '' === $phone || $amount <= 0 ) {
 			$this->payment_error( __( 'Please provide valid payment details.', 'saukipay' ), array(), $return_url, 400 );

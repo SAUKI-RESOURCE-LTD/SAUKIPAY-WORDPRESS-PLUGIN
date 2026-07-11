@@ -13,6 +13,7 @@ require_once SAUKIPAY_PATH . 'includes/class-saukipay-settings.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-api.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-webhook.php';
 require_once SAUKIPAY_PATH . 'includes/class-saukipay-payment-form.php';
+require_once SAUKIPAY_PATH . 'includes/class-saukipay-give-gateway.php';
 
 /**
  * Coordinates plugin services.
@@ -74,10 +75,12 @@ final class SaukiPay_Plugin {
 		$this->api          = new SaukiPay_API( $this->settings );
 		$this->webhook      = new SaukiPay_Webhook( $this->settings, $this->api );
 		$this->payment_form = new SaukiPay_Payment_Form( $this->settings, $this->api );
+		$give_gateway       = new SaukiPay_Give_Gateway( $this->settings, $this->api );
 
 		$this->settings->init();
 		$this->webhook->init();
 		$this->payment_form->init();
+		$give_gateway->init();
 
 		add_filter( 'plugin_action_links_' . plugin_basename( SAUKIPAY_FILE ), array( $this, 'plugin_action_links' ) );
 
@@ -85,6 +88,7 @@ final class SaukiPay_Plugin {
 			require_once SAUKIPAY_PATH . 'includes/class-saukipay-woocommerce-gateway.php';
 			add_filter( 'woocommerce_payment_gateways', array( $this, 'register_woocommerce_gateway' ) );
 		}
+
 	}
 
 	/**

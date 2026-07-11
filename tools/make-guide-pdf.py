@@ -8,7 +8,7 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
-HTML = ROOT / "docs" / "saukipay-wordpress-plugin-guide.html"
+HTML = ROOT / "docs" / "index.html"
 PDF = ROOT / "docs" / "saukipay-wordpress-plugin-guide.pdf"
 MAC_CHROME = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
 

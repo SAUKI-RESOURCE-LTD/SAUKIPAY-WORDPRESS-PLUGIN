@@ -116,6 +116,10 @@ class SaukiPay_Webhook {
 			return;
 		}
 
+		if ( $this->update_give_payment( $reference, $data, 'callback' ) ) {
+			return;
+		}
+
 		$this->update_form_transaction( $reference, $data, 'success' === $status ? 'success' : 'failed' );
 		$this->redirect_form_result(
 			'success' === $status ? 'success' : 'failed',
@@ -149,6 +153,7 @@ class SaukiPay_Webhook {
 		$reference = sanitize_text_field( $data['reference'] );
 
 		$this->update_woocommerce_order( $reference, $data, 'webhook' );
+		$this->update_give_payment( $reference, $data, 'webhook' );
 		$this->update_form_transaction( $reference, $data, 'success' === strtolower( (string) ( $data['status'] ?? '' ) ) ? 'success' : 'failed' );
 
 		status_header( 200 );
@@ -246,6 +251,125 @@ class SaukiPay_Webhook {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Update GiveWP payment from reference.
+	 *
+	 * @param string $reference Payment reference.
+	 * @param array  $data Verified or webhook data.
+	 * @param string $source Update source.
+	 * @return bool
+	 */
+	public function update_give_payment( $reference, array $data, $source ) {
+		if ( ! post_type_exists( 'give_payment' ) ) {
+			return false;
+		}
+
+		$payments = get_posts(
+			array(
+				'post_type'      => 'give_payment',
+				'post_status'    => 'any',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'meta_key'       => '_saukipay_reference',
+				'meta_value'     => $reference,
+			)
+		);
+
+		if ( empty( $payments ) ) {
+			return false;
+		}
+
+		$payment_id = absint( $payments[0] );
+		$status     = isset( $data['status'] ) ? strtolower( sanitize_text_field( $data['status'] ) ) : '';
+
+		if ( 'success' === $status ) {
+			$this->update_give_payment_status( $payment_id, 'publish' );
+			$this->add_give_payment_note( $payment_id, sprintf( 'Sauki Pay %s verification successful. Reference: %s', sanitize_text_field( $source ), $reference ) );
+		} else {
+			$this->update_give_payment_status( $payment_id, 'failed' );
+			$this->add_give_payment_note( $payment_id, sprintf( 'Sauki Pay %s reported failed payment. Reference: %s', sanitize_text_field( $source ), $reference ) );
+		}
+
+		$this->update_give_payment_meta( $payment_id, '_saukipay_last_status', $status );
+		$this->update_give_payment_meta( $payment_id, '_saukipay_payment_channel', isset( $data['paymentChannel'] ) ? sanitize_text_field( $data['paymentChannel'] ) : '' );
+
+		if ( 'callback' === $source ) {
+			wp_safe_redirect( $this->give_redirect_url( 'success' === $status ) );
+			exit;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Update GiveWP payment status.
+	 *
+	 * @param int    $payment_id Payment ID.
+	 * @param string $status Payment status.
+	 * @return void
+	 */
+	private function update_give_payment_status( $payment_id, $status ) {
+		if ( function_exists( 'give_update_payment_status' ) ) {
+			give_update_payment_status( $payment_id, $status );
+			return;
+		}
+
+		wp_update_post(
+			array(
+				'ID'          => absint( $payment_id ),
+				'post_status' => sanitize_key( $status ),
+			)
+		);
+	}
+
+	/**
+	 * Update GiveWP payment meta.
+	 *
+	 * @param int    $payment_id Payment ID.
+	 * @param string $key Meta key.
+	 * @param mixed  $value Meta value.
+	 * @return void
+	 */
+	private function update_give_payment_meta( $payment_id, $key, $value ) {
+		if ( function_exists( 'give_update_payment_meta' ) ) {
+			give_update_payment_meta( $payment_id, $key, $value );
+			return;
+		}
+
+		update_post_meta( $payment_id, $key, $value );
+	}
+
+	/**
+	 * Add GiveWP payment note.
+	 *
+	 * @param int    $payment_id Payment ID.
+	 * @param string $note Payment note.
+	 * @return void
+	 */
+	private function add_give_payment_note( $payment_id, $note ) {
+		if ( function_exists( 'give_insert_payment_note' ) ) {
+			give_insert_payment_note( $payment_id, sanitize_text_field( $note ) );
+		}
+	}
+
+	/**
+	 * Get GiveWP callback redirect URL.
+	 *
+	 * @param bool $success Whether payment succeeded.
+	 * @return string
+	 */
+	private function give_redirect_url( $success ) {
+		if ( $success && function_exists( 'give_get_success_page_uri' ) ) {
+			return give_get_success_page_uri();
+		}
+
+		if ( ! $success && function_exists( 'give_get_failed_transaction_uri' ) ) {
+			return give_get_failed_transaction_uri();
+		}
+
+		return home_url( '/' );
 	}
 
 	/**

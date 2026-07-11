@@ -1,34 +1,36 @@
 # Sauki Pay WordPress Plugin Guide
 
-Version: 1.0.0
+Version: 1.1.6
 
 ## What This Plugin Does
 
 Sauki Pay helps you accept payments on your WordPress website.
 
-You can use it in two ways:
+You can use it in three ways:
 
 1. Add Sauki Pay to WooCommerce checkout.
-2. Add a standalone Sauki Pay payment form to any page with a shortcode.
+2. Add Sauki Pay to GiveWP donation forms.
+3. Add a standalone Sauki Pay payment form to any page with a shortcode.
 
-The plugin connects securely to the Sauki Pay API and redirects customers to Sauki Pay checkout to complete payment.
+The plugin connects securely to the Sauki Pay API and redirects customers or donors to Sauki Pay checkout to complete payment.
 
 ## Requirements
 
 - WordPress 5.8 or newer.
 - PHP 7.4 or newer.
 - Sauki Pay merchant public and secret keys.
-- WooCommerce, only if you want to accept payments from WooCommerce checkout.
+- WooCommerce, only if you want WooCommerce checkout payments.
+- GiveWP, only if you want GiveWP donation payments.
 
 ## Download The Plugin
 
 You can download the Sauki Pay WordPress plugin from the official GitHub release page:
 
-`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/tag/v1.0.0`
+`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/tag/v1.1.6`
 
 Direct plugin ZIP download:
 
-`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.0.0/saukipay-wordpress-plugin.zip`
+`https://github.com/SAUKI-RESOURCE-LTD/SAUKIPAY-WORDPRESS-PLUGIN/releases/download/v1.1.6/saukipay-wordpress-plugin.zip`
 
 Download the ZIP file before installing the plugin in WordPress.
 
@@ -79,9 +81,22 @@ When a customer pays through WooCommerce, the plugin creates a payment reference
 
 If the verified payment status is `success`, the order is marked as paid.
 
+## GiveWP Donation Payments
+
+To use Sauki Pay with GiveWP:
+
+1. Install and activate GiveWP.
+2. Open Donations > Settings > Payment Gateways.
+3. Enable Sauki Pay in the gateway list.
+4. Set Sauki Pay as the default gateway if you want donors to see it first.
+5. Save changes.
+6. Configure your Sauki Pay keys in the Sauki Pay plugin settings.
+
+Sauki Pay appears on GiveWP donation payment screens as a secure checkout option with Sauki Pay branding. Donors are redirected to Sauki Pay checkout and returned after payment.
+
 ## Payment Form Shortcode
 
-The plugin includes a payment form that can be placed on any page or post.
+The plugin includes a standalone payment form that can be placed on any page or post.
 
 Open Sauki Pay > Payment Form in WordPress admin to create or edit the form. The page generates a shortcode for you.
 
@@ -93,17 +108,26 @@ Fixed amount example:
 
 `[saukipay_payment_form amount="5000" currency="NGN" title="Pay Registration Fee" fixed_amount="yes"]`
 
+Preset donation amount example:
+
+`[saukipay_payment_form currency="NGN" title="Donate" preset_amounts="1000,10000,50000" allow_custom_amount="yes"]`
+
 ## Payment Form Options
 
 | Option | Description |
 | --- | --- |
 | Form title | The heading shown above the form fields. |
-| Amount | The amount customers should pay. |
+| Description | Optional text shown under the form title. |
+| Amount | Optional default amount. |
+| Preset amounts | Quick-select payment amounts shown as branded amount boxes. Separate each amount with a comma. |
+| Allow custom amount | Lets customers type a custom amount if the preset amount they want is not listed. |
 | Currency | The payment currency, for example `NGN`. |
 | Button text | The text shown on the payment button. |
+| Footer note | Optional text shown below the payment button. |
 | Fixed amount | Prevents customers from changing the amount. |
+| Form width | Controls whether the form is compact, wide, or full width. |
 
-If fixed amount is disabled, customers can enter the amount themselves.
+If fixed amount is disabled, customers can select a preset amount or enter a custom amount when custom amount is enabled.
 
 ## Customer Payment Flow
 
@@ -122,7 +146,27 @@ The plugin verifies webhook requests before processing them. When a webhook is v
 
 `ok`
 
-Webhooks help keep order and payment status updated even if a customer closes the browser before returning to your website.
+Webhooks help keep WooCommerce orders, GiveWP donations, and shortcode payment records updated even if a customer closes the browser before returning to your website.
+
+## Plugin Screenshots
+
+These examples show the Sauki Pay settings, form builder, standalone payment form, and GiveWP checkout experience. Sensitive keys and merchant-site URLs are hidden in the documentation images.
+
+![Sauki Pay settings page with keys and callback URLs hidden](assets/saukipay-settings-sanitized.jpg)
+
+Sauki Pay settings page.
+
+![Sauki Pay payment form builder with shortcode and preview](assets/saukipay-form-builder-sanitized.jpg)
+
+Payment form builder.
+
+![Standalone Sauki Pay payment form with preset donation amounts](assets/saukipay-payment-form-sanitized.jpg)
+
+Standalone payment form.
+
+![GiveWP donation checkout with Sauki Pay selected](assets/saukipay-givewp-checkout-sanitized.jpg)
+
+GiveWP checkout with Sauki Pay.
 
 ## Going Live
 

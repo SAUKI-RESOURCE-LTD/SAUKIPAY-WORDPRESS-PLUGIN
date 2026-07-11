@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Sauki Pay
  * Plugin URI: https://saukipay.net
- * Description: Accept payments with Sauki Pay through WooCommerce and a standalone shortcode payment form.
- * Version: 1.0.2
+ * Description: Accept payments with Sauki Pay through WooCommerce, GiveWP, and a standalone shortcode payment form.
+ * Version: 1.1.6
  * Author: Sauki Pay
  * Author URI: https://saukipay.net
  * Text Domain: saukipay
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SAUKIPAY_VERSION', '1.0.2' );
+define( 'SAUKIPAY_VERSION', '1.1.6' );
 define( 'SAUKIPAY_FILE', __FILE__ );
 define( 'SAUKIPAY_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SAUKIPAY_URL', plugin_dir_url( __FILE__ ) );
@@ -33,7 +33,7 @@ require_once SAUKIPAY_PATH . 'includes/class-saukipay-plugin.php';
 function saukipay_bootstrap() {
 	SaukiPay_Plugin::instance();
 }
-add_action( 'plugins_loaded', 'saukipay_bootstrap' );
+add_action( 'plugins_loaded', 'saukipay_bootstrap', 1 );
 
 register_activation_hook( __FILE__, array( 'SaukiPay_Plugin', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'SaukiPay_Plugin', 'deactivate' ) );

@@ -266,6 +266,28 @@ class SaukiPay_Settings {
 								<?php endif; ?>
 							</td>
 						</tr>
+						<tr>
+							<th scope="row"><?php esc_html_e( 'GiveWP gateway', 'saukipay' ); ?></th>
+							<td>
+								<?php if ( class_exists( 'Give' ) || defined( 'GIVE_VERSION' ) || function_exists( 'give' ) ) : ?>
+									<p>
+										<strong><?php esc_html_e( 'Available', 'saukipay' ); ?></strong>
+										<?php esc_html_e( 'Sauki Pay can be enabled from GiveWP payment gateway settings.', 'saukipay' ); ?>
+									</p>
+									<p>
+										<a class="button" href="<?php echo esc_url( admin_url( 'edit.php?post_type=give_forms&page=give-settings&tab=gateways' ) ); ?>">
+											<?php esc_html_e( 'Open GiveWP Gateways', 'saukipay' ); ?>
+										</a>
+									</p>
+								<?php else : ?>
+									<p>
+										<strong><?php esc_html_e( 'Not active', 'saukipay' ); ?></strong>
+										<?php esc_html_e( 'Install and activate GiveWP to accept donations with Sauki Pay.', 'saukipay' ); ?>
+									</p>
+									<p class="description"><?php esc_html_e( 'The shortcode payment form works without GiveWP.', 'saukipay' ); ?></p>
+								<?php endif; ?>
+							</td>
+						</tr>
 					</tbody>
 				</table>
 				<?php submit_button(); ?>
